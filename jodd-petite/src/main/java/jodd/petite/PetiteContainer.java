@@ -31,6 +31,7 @@ import jodd.petite.meta.InitMethodInvocationStrategy;
 import jodd.petite.scope.Scope;
 import jodd.petite.scope.SingletonScope;
 
+import java.lang.reflect.Constructor;
 import java.util.Collection;
 
 import jodd.typeconverter.Convert;
@@ -89,12 +90,48 @@ public class PetiteContainer extends PetiteBeans {
 	/**
 	 * Creates new bean instance and performs constructor injection.
 	 */
-	protected Object newBeanInstance(BeanDefinition def) {
+	protected Object createBeanWithConstructor(BeanDefinition def) {
 		if (def.ctor == null) {
-			def.ctor = petiteResolvers.resolveCtorInjectionPoint(def.type);
+			def.ctor = petiteResolvers.instantiateCtorInjectionInfo(def.type);
 		}
 
 		int paramNo = def.ctor.references.length;
+		Object[] args = instantiateConstorReferencesRecursion(def, paramNo);
+
+		// create instance
+		Object bean;
+		Constructor constructor = def.ctor.constructor;
+		try {
+			bean = createBean(constructor, args);
+		} catch (Exception ex) {
+			throw new PetiteException("Failed to create new bean instance '" + def.type.getName() + "' using constructor: " + def.ctor.constructor, ex);
+		}
+
+		return bean;
+	}
+
+	/**
+	 *
+	 * @param def
+	 * @param args 构造器参数的实例化对象
+	 * @return
+	 * @throws InstantiationException
+	 * @throws IllegalAccessException
+	 * @throws java.lang.reflect.InvocationTargetException
+     */
+	private Object createBean(Constructor constructor, Object[] args) throws InstantiationException, IllegalAccessException, java.lang.reflect.InvocationTargetException {
+		Object bean;
+		bean = constructor.newInstance(args);//通过构造器创建bean
+		return bean;
+	}
+
+	/**
+	 * 实例化参数递归
+	 * @param def
+	 * @param paramNo
+     * @return
+     */
+	private Object[] instantiateConstorReferencesRecursion(BeanDefinition def, int paramNo) {
 		Object[] args = new Object[paramNo];
 
 		// wiring
@@ -110,16 +147,7 @@ public class PetiteContainer extends PetiteBeans {
 				}
 			}
 		}
-
-		// create instance
-		Object bean;
-		try {
-			bean = def.ctor.constructor.newInstance(args);
-		} catch (Exception ex) {
-			throw new PetiteException("Failed to create new bean instance '" + def.type.getName() + "' using constructor: " + def.ctor.constructor, ex);
-		}
-
-		return bean;
+		return args;
 	}
 
 	/**
@@ -131,16 +159,16 @@ public class PetiteContainer extends PetiteBeans {
 		if (def.wiringMode == WiringMode.NONE) {
 			return;
 		}
-		wireProperties(bean, def);
-		wireMethods(bean, def);
+		writeProperties(bean, def);
+		injectMethodBean(bean, def);
 	}
 
 	/**
-	 * Wires properties.
+	 * Wires properties.写属性
 	 */
-	protected void wireProperties(Object bean, BeanDefinition def) {
+	protected void writeProperties(Object bean, BeanDefinition def) {
 		if (def.properties == null) {
-			def.properties = petiteResolvers.resolvePropertyInjectionPoint(def.type, def.wiringMode == WiringMode.AUTOWIRE);
+			def.properties = petiteResolvers.getPropertyInjectionPoint(def.type, def.wiringMode == WiringMode.AUTOWIRE);
 		}
 
 		boolean mixing = petiteConfig.wireScopedProxy || petiteConfig.detectMixedScopes;
@@ -172,7 +200,7 @@ public class PetiteContainer extends PetiteBeans {
 			}
 
 			// BeanUtil.setDeclaredProperty(bean, pip.propertyDescriptor.getName(), value);
-
+			//可能是方法setter或者是域setter
 			Setter setter = pip.propertyDescriptor.getSetter(true);
 			try {
 				setter.invokeSetter(bean, value);
@@ -214,13 +242,13 @@ public class PetiteContainer extends PetiteBeans {
 	/**
 	 * Wires methods.
 	 */
-	protected void wireMethods(Object bean, BeanDefinition def) {
+	protected void injectMethodBean(Object bean, BeanDefinition def) {
 		if (def.methods == null) {
-			def.methods = petiteResolvers.resolveMethodInjectionPoint(def.type);
+			def.methods = petiteResolvers.resolveMethodInjectionPoint(def.type);//获取注入方法
 		}
 		for (MethodInjectionPoint methodRef : def.methods) {
 			String[][] refNames = methodRef.references;
-			Object[] args = new Object[refNames.length];
+			Object[] parameterBean = new Object[refNames.length];
 			for (int i = 0; i < refNames.length; i++) {
 				String[] refName = refNames[i];
 				Object value = null;
@@ -239,7 +267,7 @@ public class PetiteContainer extends PetiteBeans {
 					value = getBean(refName);
 				}
 
-				args[i] = value;
+				parameterBean[i] = value;
 				if (value == null) {
 					if ((def.wiringMode == WiringMode.STRICT)) {
 						throw new PetiteException("Wiring failed. Beans references: '" +
@@ -249,7 +277,7 @@ public class PetiteContainer extends PetiteBeans {
 			}
 
 			try {
-				methodRef.method.invoke(bean, args);
+				methodRef.method.invoke(bean, parameterBean);
 			} catch (Exception ex) {
 				throw new PetiteException(ex);
 			}
@@ -345,9 +373,9 @@ public class PetiteContainer extends PetiteBeans {
 	public Object getBean(String name) {
 
 		// Lookup for registered bean definition.
-		BeanDefinition def = lookupBeanDefinition(name);
+		BeanDefinition beanDefinition = lookupBeanDefinition(name);
 
-		if (def == null) {
+		if (beanDefinition == null) {
 
 			// try provider
 			ProviderDefinition providerDefinition = providers.get(name);
@@ -359,12 +387,12 @@ public class PetiteContainer extends PetiteBeans {
 		}
 
 		// Find the bean in its scope
-		Object bean = def.scopeLookup();
+		Object bean = beanDefinition.scopeLookup();
 
 		if (bean == null) {
 			// Create new bean in the scope
-			bean = newBeanInstance(def);
-			registerBeanAndWireAndInjectParamsAndInvokeInitMethods(def, bean);
+			bean = createBeanWithConstructor(beanDefinition);
+			registerBeanAndWireAndInjectParamsAndInvokeInitMethods(beanDefinition, bean);
 		}
 
 		return bean;
@@ -422,7 +450,7 @@ public class PetiteContainer extends PetiteBeans {
 	public <E> E createBean(Class<E> type, WiringMode wiringMode) {
 		wiringMode = petiteConfig.resolveWiringMode(wiringMode);
 		BeanDefinition def = new BeanDefinition(null, type, null, wiringMode);
-		Object bean = newBeanInstance(def);
+		Object bean = createBeanWithConstructor(def);
 		registerBeanAndWireAndInjectParamsAndInvokeInitMethods(def, bean);
 		return (E) bean;
 	}

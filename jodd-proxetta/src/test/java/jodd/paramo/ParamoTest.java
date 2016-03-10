@@ -56,7 +56,7 @@ public class ParamoTest {
 	@Test
 	public void testConstructor() throws NoSuchMethodException {
 		Constructor c = Foo.class.getConstructor(String.class);
-		MethodParameter[] mps = Paramo.resolveParameters(c);
+		MethodParameter[] mps = Paramo.resolveParametersNameAndDescriptors(c);
 		String[] s = resolveParameterNames(mps);
 		assertEquals(1, s.length);
 		assertEquals("something", s[0]);
@@ -65,7 +65,7 @@ public class ParamoTest {
 	@Test
 	public void testOneParam() throws NoSuchMethodException {
 		Method m = Foo.class.getMethod("one", String.class);
-		MethodParameter[] mps = Paramo.resolveParameters(m);
+		MethodParameter[] mps = Paramo.resolveParametersNameAndDescriptors(m);
 		String[] s = resolveParameterNames(mps);
 		assertEquals(1, s.length);
 		assertEquals("foo", s[0]);
@@ -74,7 +74,7 @@ public class ParamoTest {
 	@Test
 	public void testTwoParams() throws NoSuchMethodException {
 		Method m = Foo.class.getMethod("two", String.class, String.class);
-		MethodParameter[] mps = Paramo.resolveParameters(m);
+		MethodParameter[] mps = Paramo.resolveParametersNameAndDescriptors(m);
 		String[] s = resolveParameterNames(mps);
 		assertEquals(2, s.length);
 		assertEquals("username", s[0]);
@@ -84,7 +84,7 @@ public class ParamoTest {
 	@Test
 	public void testNoParams() throws NoSuchMethodException {
 		Method m = Foo.class.getMethod("hello");
-		MethodParameter[] mps = Paramo.resolveParameters(m);
+		MethodParameter[] mps = Paramo.resolveParametersNameAndDescriptors(m);
 		assertNotNull(mps);
 		assertEquals(0, mps.length);
 	}
@@ -92,7 +92,7 @@ public class ParamoTest {
 	@Test
 	public void testArray() throws NoSuchMethodException {
 		Method m = Foo.class.getMethod("array", String.class, Integer[].class, float[].class);
-		MethodParameter[] mps = Paramo.resolveParameters(m);
+		MethodParameter[] mps = Paramo.resolveParametersNameAndDescriptors(m);
 		String[] s = resolveParameterNames(mps);
 		assertEquals(3, s.length);
 		assertEquals("foo", s[0]);
@@ -103,7 +103,7 @@ public class ParamoTest {
 	@Test
 	public void testPrimitives() throws NoSuchMethodException {
 		Method m = ReflectUtil.findDeclaredMethod(Foo.class, "primitives");
-		MethodParameter[] mps = Paramo.resolveParameters(m);
+		MethodParameter[] mps = Paramo.resolveParametersNameAndDescriptors(m);
 		String[] s = resolveParameterNames(mps);
 		assertEquals(8, s.length);
 		assertEquals("i", s[0]);
@@ -119,7 +119,7 @@ public class ParamoTest {
 	@Test
 	public void testPrimitivesArrays1() throws NoSuchMethodException {
 		Method m = ReflectUtil.findDeclaredMethod(Foo.class, "primarr1");
-		MethodParameter[] mps = Paramo.resolveParameters(m);
+		MethodParameter[] mps = Paramo.resolveParametersNameAndDescriptors(m);
 		String[] s = resolveParameterNames(mps);
 		assertEquals(2, s.length);
 		assertEquals("one", s[0]);
@@ -129,7 +129,7 @@ public class ParamoTest {
 	@Test
 	public void testPrimitivesArrays2() throws NoSuchMethodException {
 		Method m = ReflectUtil.findDeclaredMethod(Foo.class, "primarr2");
-		MethodParameter[] mps = Paramo.resolveParameters(m);
+		MethodParameter[] mps = Paramo.resolveParametersNameAndDescriptors(m);
 		String[] s = resolveParameterNames(mps);
 		assertEquals(6, s.length);
 		assertEquals("i", s[0]);
@@ -143,7 +143,7 @@ public class ParamoTest {
 	@Test
 	public void testPrimitivesArrays3() throws NoSuchMethodException {
 		Method m = ReflectUtil.findDeclaredMethod(Foo.class, "primarrShortByte");
-		MethodParameter[] mps = Paramo.resolveParameters(m);
+		MethodParameter[] mps = Paramo.resolveParametersNameAndDescriptors(m);
 		String[] s = resolveParameterNames(mps);
 		assertEquals(3, s.length);
 		assertEquals("s", s[0]);
@@ -154,7 +154,7 @@ public class ParamoTest {
 	@Test
 	public void testNonGeneric() {
 		Method m = ReflectUtil.findDeclaredMethod(NonGeneric.class, "one");
-		MethodParameter[] mps = Paramo.resolveParameters(m);
+		MethodParameter[] mps = Paramo.resolveParametersNameAndDescriptors(m);
 		assertEquals(2, mps.length);
 		assertEquals("foo", mps[0].getName());
 		assertEquals("Ljava/util/Map;", mps[0].getSignature());
@@ -165,7 +165,7 @@ public class ParamoTest {
 	@Test
 	public void testGeneric() {
 		Method m = ReflectUtil.findDeclaredMethod(Generic.class, "one");
-		MethodParameter[] mps = Paramo.resolveParameters(m);
+		MethodParameter[] mps = Paramo.resolveParametersNameAndDescriptors(m);
 		assertEquals(2, mps.length);
 		assertEquals("foo", mps[0].getName());
 		assertEquals("Ljava/util/Map<Ljava/lang/String;Ljava/lang/Long;>;", mps[0].getSignature());
@@ -173,7 +173,7 @@ public class ParamoTest {
 		assertEquals("Ljava/lang/Long;", mps[1].getSignature());
 
 		m = ReflectUtil.findDeclaredMethod(Generic.class, "two");
-		mps = Paramo.resolveParameters(m);
+		mps = Paramo.resolveParametersNameAndDescriptors(m);
 		assertEquals(1, mps.length);
 		assertEquals("zzz", mps[0].getName());
 		assertEquals("Ljava/util/Map<Ljava/lang/String;Ljodd/paramo/data/Bar<Ljava/lang/Long;>;>;", mps[0].getSignature());
@@ -182,7 +182,7 @@ public class ParamoTest {
 	@Test
 	public void testGenericsWildcards() {
 		Method m = ReflectUtil.findDeclaredMethod(Generic.class, "three");
-		MethodParameter[] mps = Paramo.resolveParameters(m);
+		MethodParameter[] mps = Paramo.resolveParametersNameAndDescriptors(m);
 		assertEquals(3, mps.length);
 
 		assertEquals("comparable", mps[0].getName());

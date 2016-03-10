@@ -55,10 +55,28 @@ public class ManualTest {
 		pc.registerPetitePropertyInjectionPoint("pojo", "service", "someService");
 		pc.registerPetiteMethodInjectionPoint("pojo", "injectService", null, new String[]{"someService"});
 		pc.registerPetiteInitMethods("pojo", POST_INITIALIZE, "init");
-
+//
 		PojoBean pojoBean = (PojoBean) pc.getBean("pojo");
 		SomeService ss = (SomeService) pc.getBean("someService");
+//
+		assertNotNull(pojoBean);
+		assertNotNull(ss);
+		assertSame(ss, pojoBean.fservice);
+		assertSame(ss, pojoBean.service);
+		assertSame(ss, pojoBean.service2);
+		assertEquals(1, pojoBean.count);
+	}
 
+	@Test
+	public void testSameInjectName() {
+		PetiteContainer pc = new PetiteContainer();
+		pc.registerPetiteBean(SomeService.class, null, null, null, false);
+		pc.registerPetiteBean(PojoBean.class, "someService", null, null, false);
+		assertEquals(2, pc.getTotalBeans());
+//
+		PojoBean pojoBean = (PojoBean) pc.getBean("pojo");
+		SomeService ss = (SomeService) pc.getBean("someService");
+//
 		assertNotNull(pojoBean);
 		assertNotNull(ss);
 		assertSame(ss, pojoBean.fservice);

@@ -199,7 +199,7 @@ public abstract class PetiteBeans {
 	 * of base type during registration of bean subclass.
 	 */
 	public String resolveBeanName(Class type) {
-		return PetiteUtil.resolveBeanName(type, petiteConfig.getUseFullTypeNames());
+		return PetiteUtil.resolveBeanNameClassOrAnnotationName(type, petiteConfig.getUseFullTypeNames());
 	}
 
 	// ---------------------------------------------------------------- register beans
@@ -293,7 +293,7 @@ public abstract class PetiteBeans {
 
 		// define
 		if (define) {
-			beanDefinition.ctor = petiteResolvers.resolveCtorInjectionPoint(beanDefinition.getType());
+			beanDefinition.ctor = petiteResolvers.instantiateCtorInjectionInfo(beanDefinition.getType());
 			beanDefinition.properties = PropertyInjectionPoint.EMPTY;
 			beanDefinition.methods = MethodInjectionPoint.EMPTY;
 			beanDefinition.initMethods = InitMethodPoint.EMPTY;
@@ -384,6 +384,12 @@ public abstract class PetiteBeans {
 		BeanDefinition beanDefinition = lookupExistingBeanDefinition(beanName);
 		String[][] ref = PetiteUtil.convertRefToReferences(references);
 
+		Constructor constructor = findConstructor(paramTypes, beanDefinition);
+
+		beanDefinition.ctor = injectionPointFactory.createCtorInjectionPoint(constructor, ref);
+	}
+
+	private Constructor findConstructor(Class[] paramTypes, BeanDefinition beanDefinition) {
 		ClassDescriptor cd = ClassIntrospector.lookup(beanDefinition.type);
 		Constructor constructor = null;
 
@@ -406,8 +412,7 @@ public abstract class PetiteBeans {
 		if (constructor == null) {
 			throw new PetiteException("Constructor not found: " + beanDefinition.type.getName());
 		}
-
-		beanDefinition.ctor = injectionPointFactory.createCtorInjectionPoint(constructor, ref);
+		return constructor;
 	}
 
 	/**

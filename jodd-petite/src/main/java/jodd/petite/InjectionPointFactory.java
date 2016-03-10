@@ -51,7 +51,7 @@ public class InjectionPointFactory {
 	 */
 	public CtorInjectionPoint createCtorInjectionPoint(Constructor constructor, String[][] references) {
 		if (references == null || references.length == 0) {
-			references = methodOrCtorDefaultReferences(constructor, constructor.getParameterTypes());
+			references = methodOrConstructorReferences(constructor, constructor.getParameterTypes());
 		}
 		if (constructor.getParameterTypes().length != references.length) {
 			throw new PetiteException(
@@ -66,7 +66,7 @@ public class InjectionPointFactory {
 	 */
 	public MethodInjectionPoint createMethodInjectionPoint(Method method, String[][] references) {
 		if (references == null || references.length == 0) {
-			references = methodOrCtorDefaultReferences(method, method.getParameterTypes());
+			references = methodOrConstructorReferences(method, method.getParameterTypes());
 		}
 		if (method.getParameterTypes().length != references.length) {
 			throw new PetiteException("Different number of method parameters and references for: " +
@@ -116,11 +116,11 @@ public class InjectionPointFactory {
 	/**
 	 * Builds default method references.
 	 */
-	protected String[][] methodOrCtorDefaultReferences(AccessibleObject accobj, Class[] paramTypes) {
+	protected String[][] methodOrConstructorReferences(AccessibleObject accobj, Class[] paramTypes) {
 		PetiteReference[] lookupReferences = petiteConfig.getLookupReferences();
 		MethodParameter[] methodParameters = null;
 		if (petiteConfig.getUseParamo()) {
-			methodParameters = Paramo.resolveParameters(accobj);
+			methodParameters = Paramo.resolveParametersNameAndDescriptors(accobj);
 		}
 
 		String[][] references = new String[paramTypes.length][];

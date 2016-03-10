@@ -29,8 +29,8 @@ public class PojoBean {
 
 	public final SomeService fservice;
 
-	public PojoBean(SomeService fservice) {
-		this.fservice = fservice;
+	public PojoBean(SomeService someService) {
+		this.fservice = someService;
 	}
 
 	public SomeService service;

@@ -74,6 +74,7 @@ final class MethodFinder extends EmptyClassVisitor {
 		this.paramExtractor = null;
 	}
 
+	//name 方法名
 	@Override
 	public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
 		if (paramExtractor != null) {

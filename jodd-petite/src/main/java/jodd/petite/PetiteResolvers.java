@@ -60,15 +60,16 @@ public class PetiteResolvers {
 
 	/**
 	 * Resolves constructor injection point.
+	 * 实例化构造器注入信息
 	 */
-	public CtorInjectionPoint resolveCtorInjectionPoint(Class type) {
+	public CtorInjectionPoint instantiateCtorInjectionInfo(Class type) {
 		return ctorResolver.resolve(type, true);
 	}
 
 	/**
 	 * Resolves property injection points.
 	 */
-	public PropertyInjectionPoint[] resolvePropertyInjectionPoint(Class type, boolean autowire) {
+	public PropertyInjectionPoint[] getPropertyInjectionPoint(Class type, boolean autowire) {
 		return propertyResolver.resolve(type, autowire);
 	}
 

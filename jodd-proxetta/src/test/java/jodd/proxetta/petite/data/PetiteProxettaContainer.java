@@ -23,7 +23,7 @@ public class PetiteProxettaContainer extends PetiteContainer {
 //            boolean define) {
 //
 //        if (name == null) {
-//            name = PetiteUtil.resolveBeanName(type, false);
+//            name = PetiteUtil.resolveBeanNameClassOrAnnotationName(type, false);
 //        }
 //
 //        ProxyProxettaBuilder builder = proxetta.builder();

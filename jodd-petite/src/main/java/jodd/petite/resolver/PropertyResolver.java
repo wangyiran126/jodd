@@ -59,7 +59,7 @@ public class PropertyResolver {
 		List<PropertyInjectionPoint> list = new ArrayList<>();
 		PropertyDescriptor[] allPropertyDescriptors = cd.getAllPropertyDescriptors();
 
-		for (PropertyDescriptor propertyDescriptor : allPropertyDescriptors) {
+		for (PropertyDescriptor propertyDescriptor : allPropertyDescriptors) {//添加有PetiteInject注解的
 
 			if (propertyDescriptor.isGetterOnly()) {
 				continue;

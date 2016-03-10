@@ -256,7 +256,7 @@ public class ReflectUtilTest {
 
 	@Test
 	public void testAccessibleA() {
-		Method[] ms = ReflectUtil.getAccessibleMethods(A.class, null);
+		Method[] ms = ReflectUtil.getMethodsContainSuperClass(A.class, null);
 		assertEquals(4 + 11, ms.length);            // there are 11 accessible Object methods (9 public + 2 protected)
 		ms = ReflectUtil.getAccessibleMethods(A.class);
 		assertEquals(4, ms.length);
@@ -282,7 +282,7 @@ public class ReflectUtilTest {
 
 	@Test
 	public void testAccessibleB() {
-		Method[] ms = ReflectUtil.getAccessibleMethods(B.class, null);
+		Method[] ms = ReflectUtil.getMethodsContainSuperClass(B.class, null);
 		assertEquals(3 + 11, ms.length);
 		ms = ReflectUtil.getAccessibleMethods(B.class);
 		assertEquals(3, ms.length);
@@ -308,7 +308,7 @@ public class ReflectUtilTest {
 
 	@Test
 	public void testAccessibleC() {
-		Method[] ms = ReflectUtil.getAccessibleMethods(C.class, null);
+		Method[] ms = ReflectUtil.getMethodsContainSuperClass(C.class, null);
 		assertEquals(5 + 11, ms.length);
 		ms = ReflectUtil.getAccessibleMethods(C.class);
 		assertEquals(5, ms.length);
@@ -334,7 +334,7 @@ public class ReflectUtilTest {
 
 	@Test
 	public void testAccessibleD() {
-		Method[] ms = ReflectUtil.getAccessibleMethods(D.class, null);
+		Method[] ms = ReflectUtil.getMethodsContainSuperClass(D.class, null);
 		assertEquals(3 + 11, ms.length);
 		ms = ReflectUtil.getAccessibleMethods(D.class);
 		assertEquals(3, ms.length);
@@ -359,7 +359,7 @@ public class ReflectUtilTest {
 
 	@Test
 	public void testAccessibleE() {
-		Method[] ms = ReflectUtil.getAccessibleMethods(E.class, null);
+		Method[] ms = ReflectUtil.getMethodsContainSuperClass(E.class, null);
 		assertEquals(5 + 11, ms.length);
 		ms = ReflectUtil.getAccessibleMethods(E.class);
 		assertEquals(5, ms.length);
@@ -411,43 +411,43 @@ public class ReflectUtilTest {
 
 	@Test
 	public void testBeanPropertyNames() {
-		String name = ReflectUtil.getBeanPropertyGetterName(ReflectUtil.findMethod(JavaBean.class, "getOne"));
+		String name = ReflectUtil.getPropertyNameOfGetter(ReflectUtil.findMethod(JavaBean.class, "getOne"));
 		assertEquals("one", name);
 
 		name = ReflectUtil.getBeanPropertySetterName(ReflectUtil.findMethod(JavaBean.class, "setOne"));
 		assertEquals("one", name);
 
-		name = ReflectUtil.getBeanPropertyGetterName(ReflectUtil.findMethod(JavaBean.class, "isTwo"));
+		name = ReflectUtil.getPropertyNameOfGetter(ReflectUtil.findMethod(JavaBean.class, "isTwo"));
 		assertEquals("two", name);
 
 		name = ReflectUtil.getBeanPropertySetterName(ReflectUtil.findMethod(JavaBean.class, "setTwo"));
 		assertEquals("two", name);
 
-		name = ReflectUtil.getBeanPropertyGetterName(ReflectUtil.findMethod(JavaBean.class, "getThree"));
+		name = ReflectUtil.getPropertyNameOfGetter(ReflectUtil.findMethod(JavaBean.class, "getThree"));
 		assertEquals("three", name);
 
 		name = ReflectUtil.getBeanPropertySetterName(ReflectUtil.findMethod(JavaBean.class, "setThree"));
 		assertEquals("three", name);
 
-		name = ReflectUtil.getBeanPropertyGetterName(ReflectUtil.findMethod(JavaBean.class, "getF"));
+		name = ReflectUtil.getPropertyNameOfGetter(ReflectUtil.findMethod(JavaBean.class, "getF"));
 		assertEquals("f", name);
 
 		name = ReflectUtil.getBeanPropertySetterName(ReflectUtil.findMethod(JavaBean.class, "setF"));
 		assertEquals("f", name);
 
-		name = ReflectUtil.getBeanPropertyGetterName(ReflectUtil.findMethod(JavaBean.class, "getG"));
+		name = ReflectUtil.getPropertyNameOfGetter(ReflectUtil.findMethod(JavaBean.class, "getG"));
 		assertEquals("g", name);
 
 		name = ReflectUtil.getBeanPropertySetterName(ReflectUtil.findMethod(JavaBean.class, "setG"));
 		assertEquals("g", name);
 
-		name = ReflectUtil.getBeanPropertyGetterName(ReflectUtil.findMethod(JavaBean.class, "getURL"));
+		name = ReflectUtil.getPropertyNameOfGetter(ReflectUtil.findMethod(JavaBean.class, "getURL"));
 		assertEquals("URL", name);
 
 		name = ReflectUtil.getBeanPropertySetterName(ReflectUtil.findMethod(JavaBean.class, "setURL"));
 		assertEquals("URL", name);
 
-		name = ReflectUtil.getBeanPropertyGetterName(ReflectUtil.findMethod(JavaBean.class, "getBIGsmall"));
+		name = ReflectUtil.getPropertyNameOfGetter(ReflectUtil.findMethod(JavaBean.class, "getBIGsmall"));
 		assertEquals("BIGsmall", name);
 
 		name = ReflectUtil.getBeanPropertySetterName(ReflectUtil.findMethod(JavaBean.class, "setBIGsmall"));

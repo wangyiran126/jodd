@@ -147,7 +147,7 @@ public class Pathref<C> {
 			throw new PathrefException("Not a getter: " + methodName);
 		}
 
-		String getterName = ReflectUtil.getBeanPropertyGetterName(method);
+		String getterName = ReflectUtil.getPropertyNameOfGetter(method);
 
 		append(getterName);
 

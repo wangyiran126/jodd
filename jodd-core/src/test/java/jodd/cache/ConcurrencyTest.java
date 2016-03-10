@@ -34,6 +34,26 @@ import static org.junit.Assert.*;
 
 public class ConcurrencyTest {
 
+	@Test
+	public void testTwoThreadGetWriteLock(){
+		final LFUCache<String, String> lfuCache = new LFUCache<>(2, 0);
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				lfuCache.put("1", "value");
+			}
+		}).start();
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				lfuCache.put("2", "value");
+			}
+		}).start();
+		System.out.println(lfuCache.get("1"));
+		System.out.println(lfuCache.get("2"));
+
+	}
+
 	/**
 	 * http://code.google.com/p/jodd/issues/detail?id=4
 	 */

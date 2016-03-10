@@ -51,7 +51,7 @@ public class Wimp {
 			e.printStackTrace();
 		}
 
-		MethodParameter[] methodParameters = Paramo.resolveParameters(m);
+		MethodParameter[] methodParameters = Paramo.resolveParametersNameAndDescriptors(m);
 
 		Class c = ProxyTarget.argumentType(1);
 		Object val = ProxyTarget.argument(1);

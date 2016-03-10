@@ -30,21 +30,21 @@ import java.lang.reflect.Constructor;
 /**
  * Constructors collection.
  */
-public class Ctors {
+public class ConstructorsInfo {
 
 	protected final ClassDescriptor classDescriptor;
 	protected final CtorDescriptor[] allCtors;
 	protected CtorDescriptor defaultCtor;
 
-	public Ctors(ClassDescriptor classDescriptor) {
+	public ConstructorsInfo(ClassDescriptor classDescriptor) {
 		this.classDescriptor = classDescriptor;
-		this.allCtors = inspectConstructors();
+		this.allCtors = inspectAllCtorDescriptor();
 	}
 
 	/**
 	 * Inspects all declared constructors of a target type.
 	 */
-	protected CtorDescriptor[] inspectConstructors() {
+	protected CtorDescriptor[] inspectAllCtorDescriptor() {
 		Class type = classDescriptor.getType();
 		Constructor[] ctors = type.getDeclaredConstructors();
 
@@ -56,7 +56,7 @@ public class Ctors {
 			CtorDescriptor ctorDescriptor = createCtorDescriptor(ctor);
 			allCtors[i] = ctorDescriptor;
 
-			if (ctorDescriptor.isDefault()) {
+			if (ctorDescriptor.isDefaultConstructor()) {
 				defaultCtor = ctorDescriptor;
 			}
 		}

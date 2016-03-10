@@ -354,17 +354,17 @@ public class ReflectUtil {
 
 	/**
 	 * Returns array of all methods that are accessible from given class.
-	 * @see #getAccessibleMethods(Class, Class)
+	 * @see #getMethodsContainSuperClass(Class, Class)
 	 */
 	public static Method[] getAccessibleMethods(Class clazz) {
-		return getAccessibleMethods(clazz, Object.class);
+		return getMethodsContainSuperClass(clazz, Object.class);
 	}
 
 	/**
 	 * Returns array of all methods that are accessible from given class, upto limit
 	 * (usually <code>Object.class</code>). Abstract methods are ignored.
 	 */
-	public static Method[] getAccessibleMethods(Class clazz, Class limit) {
+	public static Method[] getMethodsContainSuperClass(Class clazz, Class limit) {
 		Package topPackage = clazz.getPackage();
 		List<Method> methodList = new ArrayList<>();
 		int topPackageHash = topPackage == null ? 0 : topPackage.hashCode();
@@ -811,10 +811,10 @@ public class ReflectUtil {
 	 * Returns <code>true</code> if method is bean getter.
 	 */
 	public static boolean isBeanPropertyGetter(Method method) {
-		return getBeanPropertyGetterPrefixLength(method) != 0;
+		return getGetterMethodPrefix(method) != 0;
 	}
 
-	private static int getBeanPropertyGetterPrefixLength(Method method) {
+	private static int getGetterMethodPrefix(Method method) {
 		if (isObjectMethod(method)) {
 			return 0;
 		}
@@ -837,8 +837,8 @@ public class ReflectUtil {
 	 * Returns property name from a getter method.
 	 * Returns <code>null</code> if method is not a real getter.
 	 */
-	public static String getBeanPropertyGetterName(Method method) {
-		int prefixLength = getBeanPropertyGetterPrefixLength(method);
+	public static String getPropertyNameOfGetter(Method method) {
+		int prefixLength = getGetterMethodPrefix(method);
 		if (prefixLength == 0) {
 			return null;
 		}

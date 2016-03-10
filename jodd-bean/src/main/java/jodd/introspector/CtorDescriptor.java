@@ -72,7 +72,7 @@ public class CtorDescriptor extends Descriptor {
 	 * Returns <code>true</code> if this is a default constructor
 	 * (with no parameters).
 	 */
-	public boolean isDefault() {
+	public boolean isDefaultConstructor() {
 		return parameters.length == 0;
 	}
 

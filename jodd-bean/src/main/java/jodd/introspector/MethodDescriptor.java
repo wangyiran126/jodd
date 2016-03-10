@@ -52,7 +52,7 @@ public class MethodDescriptor extends Descriptor implements Getter, Setter {
 		this.rawReturnType = ReflectUtil.getRawType(returnType, classDescriptor.getType());
 
 		Class[] componentTypes = ReflectUtil.getComponentTypes(returnType, classDescriptor.getType());
-		if (componentTypes != null) {
+		if (componentTypes != null) {//这个是做什么的?
 			this.rawReturnComponentType = componentTypes[componentTypes.length - 1];
 			this.rawReturnKeyComponentType = componentTypes[0];
 		} else {
@@ -68,7 +68,7 @@ public class MethodDescriptor extends Descriptor implements Getter, Setter {
 		rawParameterTypes = new Class[params.length];
 		rawParameterComponentTypes = genericParams.length == 0 ? null : new Class[params.length];
 
-		for (int i = 0; i < params.length; i++) {
+		for (int i = 0; i < params.length; i++) {//这个是做什么的?
 			Type type = params[i];
 			rawParameterTypes[i] = ReflectUtil.getRawType(type, classDescriptor.getType());
 			if (rawParameterComponentTypes != null) {

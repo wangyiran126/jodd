@@ -35,7 +35,7 @@ import jodd.asm5.Label;
 final class ParamExtractor extends EmptyMethodVisitor {
 
 	private final int paramCount;
-	private final int ignoreCount;
+	private final int ignoreCount;//0 代表静态方法 1代表非静态方法
 	private MethodParameter[] methodParameters;
 	private int currentParam;
 	boolean debugInfoPresent;

@@ -170,15 +170,15 @@ public class ClassReader {
             throw new IllegalArgumentException();
         }
         // parses the constant pool
-        items = new int[readUnsignedShort(off + 8)];
+        items = new int[readUnsignedShort(off + 8)];//读常量的个数
         int n = items.length;
         strings = new String[n];
         int max = 0;
         int index = off + 10;
         for (int i = 1; i < n; ++i) {
-            items[i] = index + 1;
+            items[i] = index + 1;//类型的值得索引值 +1是类型的值 参考http://stackoverflow.com/questions/5546280/understanding-javaps-output-for-the-constant-pool
             int size;
-            switch (b[index]) {
+            switch (b[index]) {//类型 参考https://en.wikipedia.org/wiki/Java_class_file   The constant pool
             case ClassWriter.FIELD:
             case ClassWriter.METH:
             case ClassWriter.IMETH:
@@ -538,7 +538,7 @@ public class ClassReader {
         context.buffer = c;
 
         // reads the class declaration
-        int access = readUnsignedShort(u);
+        int access = readUnsignedShort(u);//access flags
         String name = readClass(u + 2, c);
         String superClass = readClass(u + 4, c);
         String[] interfaces = new String[readUnsignedShort(u + 6)];
@@ -907,7 +907,7 @@ public class ClassReader {
         }
         u += 2;
 
-        // visits the method declaration
+        // visits the method declaration MethodFinder访问方法获得 返回该方法的ParamExtractor
         MethodVisitor mv = classVisitor.visitMethod(context.access,
                 context.name, context.desc, signature, exceptions);
         if (mv == null) {
@@ -1522,6 +1522,7 @@ public class ClassReader {
                         }
                     }
                 }
+                //读方法代码的参数,并把他放入reference里,每个reference数组0是参数名,1是该参数method description
                 mv.visitLocalVariable(readUTF8(u + 4, c), readUTF8(u + 6, c),
                         vsignature, labels[start], labels[start + length],
                         index);
@@ -2331,8 +2332,10 @@ public class ClassReader {
      *            the start index of the value to be read in {@link #b b}.
      * @return the read value.
      */
+    //java类文件格式 读第7,8位 代表java版本 https://en.wikipedia.org/wiki/Java_class_file
     public short readShort(final int index) {
         byte[] b = this.b;
+        //byte int都是signed,所以要& 0xFF转成int  http://stackoverflow.com/questions/11380062/what-does-value-0xff-do-in-java
         return (short) (((b[index] & 0xFF) << 8) | (b[index + 1] & 0xFF));
     }
 

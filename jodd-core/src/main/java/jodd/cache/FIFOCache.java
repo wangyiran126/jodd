@@ -52,7 +52,7 @@ public class FIFOCache<K, V> extends AbstractCacheMap<K, V> {
 	public FIFOCache(int cacheSize, long timeout) {
 		this.cacheSize = cacheSize;
 		this.timeout = timeout;
-		cacheMap = new LinkedHashMap<>(cacheSize + 1, 1.0f, false);
+		cacheMap = new LinkedHashMap<>(cacheSize + 1, 1.0f, false);//iterator是按照put的顺序,所以可以删除第一个Put的
 	}
 
 

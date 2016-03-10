@@ -221,7 +221,7 @@ public class ClassDescriptor {
 	 * Returns methods collection.
 	 * Creates new collection on first access.
 	 */
-	protected Methods getMethods() {
+	protected Methods getMethodsInfo() {
 		if (methods == null) {
 			methods = new Methods(this);
 		}
@@ -232,7 +232,7 @@ public class ClassDescriptor {
 	 * Returns {@link MethodDescriptor method descriptor} identified by name and parameters.
 	 */
 	public MethodDescriptor getMethodDescriptor(String name, boolean declared) {
-		MethodDescriptor methodDescriptor = getMethods().getMethodDescriptor(name);
+		MethodDescriptor methodDescriptor = getMethodsInfo().getMethodDescriptor(name);
 
 		if ((methodDescriptor != null) && methodDescriptor.matchDeclared(declared)) {
 			return methodDescriptor;
@@ -246,7 +246,7 @@ public class ClassDescriptor {
 	 * Returns {@link MethodDescriptor method descriptor} identified by name and parameters.
 	 */
 	public MethodDescriptor getMethodDescriptor(String name, Class[] params, boolean declared) {
-		MethodDescriptor methodDescriptor = getMethods().getMethodDescriptor(name, params);
+		MethodDescriptor methodDescriptor = getMethodsInfo().getMethodDescriptor(name, params);
 
 		if ((methodDescriptor != null) && methodDescriptor.matchDeclared(declared)) {
 			return methodDescriptor;
@@ -259,14 +259,14 @@ public class ClassDescriptor {
 	 * Returns an array of all methods with the same name.
 	 */
 	public MethodDescriptor[] getAllMethodDescriptors(String name) {
-		return getMethods().getAllMethodDescriptors(name);
+		return getMethodsInfo().getAllMethodDescriptors(name);
 	}
 
 	/**
 	 * Returns an array of all methods.
 	 */
 	public MethodDescriptor[] getAllMethodDescriptors() {
-		return getMethods().getAllMethodDescriptors();
+		return getMethodsInfo().getAllMethodDescriptors();
 	}
 
 	// ---------------------------------------------------------------- properties
@@ -277,7 +277,7 @@ public class ClassDescriptor {
 	 * Returns properties collection.
 	 * Creates new collection on first access.
 	 */
-	protected Properties getProperties() {
+	protected Properties getProperties() {//懒加载,想要的时候在用
 		if (properties == null) {
 			properties = new Properties(this);
 		}
@@ -307,15 +307,15 @@ public class ClassDescriptor {
 
 	// ---------------------------------------------------------------- ctors
 
-	private Ctors ctors;
+	private ConstructorsInfo ctors;//构造器集合
 
 	/**
 	 * Returns constructors collection.
 	 * Creates new collection of first access.
 	 */
-	protected Ctors getCtors() {
+	protected ConstructorsInfo getCtorsInfo() {
 		if (ctors == null) {
-			ctors = new Ctors(this);
+			ctors = new ConstructorsInfo(this);
 		}
 		return ctors;
 	}
@@ -324,7 +324,7 @@ public class ClassDescriptor {
 	 * Returns the default ctor or <code>null</code> if not found.
 	 */
 	public CtorDescriptor getDefaultCtorDescriptor(boolean declared) {
-		CtorDescriptor defaultCtor = getCtors().getDefaultCtor();
+		CtorDescriptor defaultCtor = getCtorsInfo().getDefaultCtor();
 
 		if ((defaultCtor != null) && defaultCtor.matchDeclared(declared)) {
 			return defaultCtor;
@@ -336,7 +336,7 @@ public class ClassDescriptor {
 	 * Returns the constructor identified by arguments or <code>null</code> if not found.
 	 */
 	public CtorDescriptor getCtorDescriptor(Class[] args, boolean declared) {
-		CtorDescriptor ctorDescriptor = getCtors().getCtorDescriptor(args);
+		CtorDescriptor ctorDescriptor = getCtorsInfo().getCtorDescriptor(args);
 
 		if ((ctorDescriptor != null) && ctorDescriptor.matchDeclared(declared)) {
 			return ctorDescriptor;
@@ -348,7 +348,7 @@ public class ClassDescriptor {
 	 * Returns an array of all {@link CtorDescriptor constructor descriptors}.
 	 */
 	public CtorDescriptor[] getAllCtorDescriptors() {
-		return getCtors().getAllCtorDescriptors();
+		return getCtorsInfo().getAllCtorDescriptors();
 	}
 
 

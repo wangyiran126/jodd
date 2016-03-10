@@ -64,24 +64,24 @@ public class LFUCache<K,V> extends AbstractCacheMap<K,V> {
 	@Override
 	protected int pruneCache() {
         int count = 0;
-		CacheObject<K,V> comin = null;
+		CacheObject<K,V> minCache = null;//获取次数最小的缓存对象
 
 		// remove expired items and find cached object with minimal access count
 		Iterator<CacheObject<K,V>> values = cacheMap.values().iterator();
 		while (values.hasNext()) {
-			CacheObject<K,V> co = values.next();
-			if (co.isExpired()) {
+			CacheObject<K,V> currentCache = values.next();
+			if (currentCache.isExpired()) {//移除过期的
 				values.remove();
-				onRemove(co.key, co.cachedObject);
+				onRemove(currentCache.key, currentCache.cachedObject);
 				count++;
 				continue;
 			}
 			
-			if (comin == null) {
-				comin = co;
+			if (minCache == null) {
+				minCache = currentCache;
 			} else {
-				if (co.accessCount < comin.accessCount) {
-					comin = co;
+				if (notMin(minCache, currentCache)) {
+					minCache = currentCache;
 				}
 			}
 		}
@@ -91,21 +91,36 @@ public class LFUCache<K,V> extends AbstractCacheMap<K,V> {
 		}
 
 		// decrease access count to all cached objects
-		if (comin != null) {
-			long minAccessCount = comin.accessCount;
+		if (minCache != null) {
+			long minAccessCount = minCache.accessCount;
 
 			values = cacheMap.values().iterator();
 			while (values.hasNext()) {
-				CacheObject<K, V> co = values.next();
-				co.accessCount -= minAccessCount;
-				if (co.accessCount <= 0) {
-					values.remove();
-					onRemove(co.key, co.cachedObject);
-					count++;					
-				}
+				count = removeLessMinCache(count, values, minAccessCount);//移除小于最小获取次数的缓存
 			}
 		}
 		return count;
+	}
+
+	private int removeLessMinCache(int count, Iterator<CacheObject<K, V>> values, long minAccessCount) {
+		CacheObject<K, V> co = values.next();
+		co.accessCount -= minAccessCount;
+		if (co.accessCount <= 0) {
+            values.remove();
+            onRemove(co.key, co.cachedObject);
+            count++;
+        }
+		return count;
+	}
+
+	/**
+	 * 如果不是最小的获取对象
+	 * @param minAccess
+	 * @param currentAccess
+     * @return
+     */
+	private boolean notMin(CacheObject<K, V> minAccess, CacheObject<K, V> currentAccess) {
+		return currentAccess.accessCount < minAccess.accessCount;
 	}
 
 	/**

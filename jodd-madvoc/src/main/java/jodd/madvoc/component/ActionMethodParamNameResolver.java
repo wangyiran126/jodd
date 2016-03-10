@@ -57,7 +57,7 @@ public class ActionMethodParamNameResolver {
 			names = convertTypeNames(actionClassMethod);
 		}
 		else {
-			MethodParameter[] methodParameters = Paramo.resolveParameters(actionClassMethod);
+			MethodParameter[] methodParameters = Paramo.resolveParametersNameAndDescriptors(actionClassMethod);
 			names = new String[methodParameters.length];
 
 			for (int i = 0; i < methodParameters.length; i++) {

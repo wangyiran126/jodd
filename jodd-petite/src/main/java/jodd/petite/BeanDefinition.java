@@ -156,9 +156,9 @@ public class BeanDefinition {
 	/**
 	 * Delegates to {@link jodd.petite.scope.Scope#register(jodd.petite.BeanDefinition, Object)}.
 	 */
-	protected void scopeRegister(Object object) {
+	protected void scopeRegister(Object bean) {
 		if (scope != null) {
-			scope.register(this, object);
+			scope.register(this, bean);
 		}
 	}
 

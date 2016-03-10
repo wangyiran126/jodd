@@ -46,7 +46,7 @@ import static jodd.util.ReflectUtil.METHOD_IS_PREFIX;
 public class Properties {
 
 	protected final ClassDescriptor classDescriptor;
-	protected final HashMap<String, PropertyDescriptor> propertyDescriptors;
+	protected final HashMap<String, PropertyDescriptor> propertyDescriptors;//关于属性方面的方法,不是getter方法
 
 	// cache
 	private PropertyDescriptor[] allProperties;
@@ -67,39 +67,14 @@ public class Properties {
 
 		Method[] methods = scanAccessible ? ReflectUtil.getAccessibleMethods(type) : ReflectUtil.getSupportedMethods(type);
 
-		for (int iteration = 0; iteration < 2; iteration++) {
-			// first find the getters, and then the setters!
-			for (Method method : methods) {
-				if (Modifier.isStatic(method.getModifiers())) {
-					continue;            // ignore static methods
-				}
+		addPropertyDescriptorOfMethod(map, methods);
 
-				boolean add = false;
-				boolean issetter = false;
+		addPropertyDescriptorOfField(map);
 
-				String propertyName;
+		return map;
+	}
 
-				if (iteration == 0) {
-					propertyName = ReflectUtil.getBeanPropertyGetterName(method);
-					if (propertyName != null) {
-						add = true;
-						issetter = false;
-					}
-				} else {
-					propertyName = ReflectUtil.getBeanPropertySetterName(method);
-					if (propertyName != null) {
-						add = true;
-						issetter = true;
-					}
-				}
-
-				if (add) {
-					MethodDescriptor methodDescriptor = classDescriptor.getMethodDescriptor(method.getName(), method.getParameterTypes(), true);
-					addProperty(map, propertyName, methodDescriptor, issetter);
-				}
-			}
-		}
-
+	private void addPropertyDescriptorOfField(HashMap<String, PropertyDescriptor> map) {
 		if (classDescriptor.isIncludeFieldsAsProperties()) {
 			FieldDescriptor[] fieldDescriptors = classDescriptor.getAllFieldDescriptors();
 			String[] prefix = classDescriptor.getPropertyFieldPrefix();
@@ -130,8 +105,46 @@ public class Properties {
 			}
 
 		}
+	}
 
-		return map;
+	/**
+	 * 添加PropertyDescriptor,含有setter或者getter方法的
+	 * @param map
+	 * @param methods
+     */
+	private void addPropertyDescriptorOfMethod(HashMap<String, PropertyDescriptor> map, Method[] methods) {
+		for (int iteration = 0; iteration < 2; iteration++) {
+			// first find the getters, and then the setters!
+			for (Method method : methods) {
+				if (Modifier.isStatic(method.getModifiers())) {
+					continue;            // ignore static methods
+				}
+
+				boolean add = false;
+				boolean issetter = false;
+
+				String propertyName;
+
+				if (iteration == 0) {
+					propertyName = ReflectUtil.getPropertyNameOfGetter(method);
+					if (propertyName != null) {
+						add = true;
+						issetter = false;
+					}
+				} else {
+					propertyName = ReflectUtil.getBeanPropertySetterName(method);
+					if (propertyName != null) {
+						add = true;
+						issetter = true;
+					}
+				}
+
+				if (add) {//添加含有setter和getter方法的propertyDescriptor
+					MethodDescriptor methodDescriptor = classDescriptor.getMethodDescriptor(method.getName(), method.getParameterTypes(), true);
+					addProperty(map, propertyName, methodDescriptor, issetter);
+				}
+			}
+		}
 	}
 
 
@@ -169,7 +182,7 @@ public class Properties {
 				String existingMethodName = existingMethodDescriptor.getMethod().getName();
 
 				if (
-						existingMethodName.startsWith(METHOD_IS_PREFIX) &&
+						existingMethodName.startsWith(METHOD_IS_PREFIX) &&//如果PropertyDescriptor已经有getter方法,则不放入
 						methodName.startsWith(METHOD_GET_PREFIX)) {
 
 					// ignore getter when ister exist
@@ -187,7 +200,7 @@ public class Properties {
 				if (setterMethod != null) {
 					Class parameterType = setterMethod.getMethod().getParameterTypes()[0];
 
-					if (returnType != parameterType) {
+					if (returnType != parameterType) {//如果当前getter方法的返回值类型和setter方法的参数类型不一致,则不放入propertydescriptor
 						// getter's type is different then setter's
 						return;
 					}
@@ -195,7 +208,7 @@ public class Properties {
 				}
 			}
 		}
-
+		//重新创建PropertyDescriptor并放入getter和setter方法
 		PropertyDescriptor propertyDescriptor = createPropertyDescriptor(name, getterMethod, setterMethod);
 
 		map.put(name, propertyDescriptor);

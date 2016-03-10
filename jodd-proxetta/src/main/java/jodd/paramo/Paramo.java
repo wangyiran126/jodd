@@ -42,12 +42,13 @@ public class Paramo {
 	protected static final String CTOR_METHOD = "<init>";
 
 	/**
+	 * 获取方法参数名和描述
 	 * Resolves method parameters from a method or constructor.
 	 * Returns an empty array when target does not contain any parameter.
 	 * No caching is involved in this process, i.e. class bytecode
 	 * is examined every time this method is called.
 	 */
-	public static MethodParameter[] resolveParameters(AccessibleObject methodOrCtor) {
+	public static MethodParameter[] resolveParametersNameAndDescriptors(AccessibleObject methodOrCtor) {
 		Class[] paramTypes;
 		Class declaringClass;
 		String name;

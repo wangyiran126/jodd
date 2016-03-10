@@ -55,7 +55,7 @@ public abstract class AbstractCacheMap<K,V> implements Cache<K,V> {
 		final V2 cachedObject;
 		long lastAccess;		// time of last access
 		long accessCount;		// number of accesses
-		long ttl;				// objects timeout (time-to-live), 0 = no timeout
+		long ttl;				// objects timeout (time-to-live), 0 = no timeout 多长时间超时
 
 		boolean isExpired() {
 			if (ttl == 0) {
@@ -71,7 +71,8 @@ public abstract class AbstractCacheMap<K,V> implements Cache<K,V> {
     }
 
 	protected Map<K,CacheObject<K,V>> cacheMap;
-
+	//读写锁可以同时多个读,可以获得更好的并发性,而用synchronize每次只允许一个线程
+	//但是ReentrantReadWriteLock Non-fair mode (default)不能保证请求锁的顺序,但是有个更高的吞吐量比Fair mode
 	private final ReentrantReadWriteLock cacheLock = new ReentrantReadWriteLock();
 	private final Lock readLock = cacheLock.readLock();
 	private final Lock writeLock = cacheLock.writeLock();

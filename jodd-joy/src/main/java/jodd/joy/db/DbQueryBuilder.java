@@ -125,7 +125,7 @@ public class DbQueryBuilder {
 			throw new DbOomException(ex);
 		}
 
-		MethodParameter[] methodParameters = Paramo.resolveParameters(method);
+		MethodParameter[] methodParameters = Paramo.resolveParametersNameAndDescriptors(method);
 
 		paramNames = new String[methodParameters.length];
 
