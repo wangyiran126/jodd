@@ -159,14 +159,14 @@ public class PetiteContainer extends PetiteBeans {
 		if (def.wiringMode == WiringMode.NONE) {
 			return;
 		}
-		writeProperties(bean, def);
+		wireProperties(bean, def);
 		injectMethodBean(bean, def);
 	}
 
 	/**
 	 * Wires properties.写属性
 	 */
-	protected void writeProperties(Object bean, BeanDefinition def) {
+	protected void wireProperties(Object bean, BeanDefinition def) {
 		if (def.properties == null) {
 			def.properties = petiteResolvers.getPropertyInjectionPoint(def.type, def.wiringMode == WiringMode.AUTOWIRE);
 		}
