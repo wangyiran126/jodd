@@ -935,7 +935,7 @@ public abstract class HttpBase<T> {
 		}
 
 		if (mediaType.equals("application/x-www-form-urlencoded")) {
-			form = HttpUtil.parseQuery(bodyString, true);
+			form = HttpUtil.parseQueryParameter(bodyString, true);
 			return;
 		}
 

@@ -508,7 +508,7 @@ public class ActionMethodParser {
 		Annotation[][] paramAnns = actionClassMethod.getParameterAnnotations();
 		String[] methodParamNames = null;
 
-		// expand arguments array with action itself, on first position
+		// replaceSpecialActionWrapper arguments array with action itself, on first position
 		Class[] types = ArraysUtil.insert(paramTypes, actionClass, 0);
 
 		ScopeData[][] allScopeData = new ScopeData[ScopeType.values().length][];

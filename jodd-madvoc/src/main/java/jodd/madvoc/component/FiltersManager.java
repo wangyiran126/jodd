@@ -47,7 +47,7 @@ public class FiltersManager extends WrapperManager<ActionFilter> {
 	}
 
 	@Override
-	protected Class<? extends ActionFilter>[] getDefaultWrappers() {
+	protected Class<? extends ActionFilter>[] getMadvocConfigDefaultInterceptors() {
 		return madvocConfig.getDefaultFilters();
 	}
 

@@ -52,7 +52,8 @@ public class SocketHttpConnection implements HttpConnection {
 	}
 
 	@Override
-	public OutputStream getOutputStream() throws IOException {
+	public OutputStream
+	getOutputStream() throws IOException {
 		return socket.getOutputStream();
 	}
 

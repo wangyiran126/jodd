@@ -836,8 +836,9 @@ public class ReflectUtil {
 	/**
 	 * Returns property name from a getter method.
 	 * Returns <code>null</code> if method is not a real getter.
+	 * 如果是null代表不是getter方法
 	 */
-	public static String getPropertyNameOfGetter(Method method) {
+	public static String getGetterPropertyName(Method method) {
 		int prefixLength = getGetterMethodPrefix(method);
 		if (prefixLength == 0) {
 			return null;
@@ -870,7 +871,7 @@ public class ReflectUtil {
 	/**
 	 * Returns beans property setter name or <code>null</code> if method is not a real setter.
 	 */
-	public static String getBeanPropertySetterName(Method method) {
+	public static String getSetterPropertyName(Method method) {
 		int prefixLength = getBeanPropertySetterPrefixLength(method);
 		if (prefixLength == 0) {
 			return null;

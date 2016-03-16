@@ -71,8 +71,9 @@ public class TomcatTestServer {
 
 		// web.xml
 
-		URL webXmlUrl = TomcatTestServer.class.getResource(webXml);
-		File webXmlFile = FileUtil.toFile(webXmlUrl);
+//		URL webXmlUrl = TomcatTestServer.class.getClassLoader().getResource(webXml);
+//		File webXmlFile = FileUtil.toFile(webXmlUrl);
+		File webXmlFile = new File(webXml);
 		if (webXmlFile == null) {
 			throw new Exception("Test resource files can not be found.");
 		}
@@ -95,15 +96,17 @@ public class TomcatTestServer {
 
 		// classes/madvoc.props
 
-		URL madvocPropsUrl = TomcatTestServer.class.getResource("madvoc.props");
-		File madvocPropsFile = FileUtil.toFile(madvocPropsUrl);
+//		URL madvocPropsUrl = TomcatTestServer.class.getResource("madvoc.props");
+//		File madvocPropsFile = FileUtil.toFile(madvocPropsUrl);
 
+		File madvocPropsFile = new File("/Users/wangyiran/source/jodd/jodd-madvoc/src/testInt/resources/jodd/madvoc/madvoc.props");
 		FileUtil.copyFileToDir(madvocPropsFile, classes);
 
 		// classes/madvoc-routes.txt
 
-		URL madvocRoutesUrl = TomcatTestServer.class.getResource("madvoc-routes.txt");
-		File madvocRoutesFile = FileUtil.toFile(madvocRoutesUrl);
+//		URL madvocRoutesUrl = TomcatTestServer.class.getResource("madvoc-routes.txt");
+//		File madvocRoutesFile = FileUtil.toFile(madvocRoutesUrl);
+		File madvocRoutesFile = new File("/Users/wangyiran/source/jodd/jodd-madvoc/src/testInt/resources/jodd/madvoc/madvoc-routes.txt");
 
 		FileUtil.copyFileToDir(madvocRoutesFile, classes);
 	}

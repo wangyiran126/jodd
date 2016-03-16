@@ -85,7 +85,7 @@ public class HttpUtil {
 	/**
 	 * Parses query from give query string. Values are optionally decoded.
 	 */
-	public static HttpMultiMap<String> parseQuery(String query, boolean decode) {
+	public static HttpMultiMap<String> parseQueryParameter(String query, boolean decode) {
 
 		HttpMultiMap<String> queryMap = HttpMultiMap.newCaseInsensitveMap();
 

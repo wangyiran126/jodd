@@ -74,7 +74,7 @@ public class MadvocSuite extends MadvocSuiteBase {
 	}
 
 	public static void startTomcat() {
-		startTomcat("web-test-int.xml");
+		startTomcat("/Users/wangyiran/source/jodd/jodd-madvoc/src/testInt/resources/jodd/madvoc/web-test-int.xml");
 	}
 
 }

@@ -38,16 +38,16 @@ public class InterceptorsManagerTest extends MadvocTestCase {
 
 	@SuppressWarnings({"unchecked"})
 	@Test
-	public void testExpand() {
-		InterceptorsManager im = new InterceptorsManager();
-		im.madvocConfig = new MadvocConfig();
-		im.madvocConfig.defaultInterceptors = new Class[]{ServletConfigInterceptor.class};
+	public void testReplace() {
+		InterceptorsManager interceptorsManage = new InterceptorsManager();
+		interceptorsManage.madvocConfig = new MadvocConfig();
+		interceptorsManage.madvocConfig.defaultInterceptors = new Class[]{ServletConfigInterceptor.class};
 
 		Class<? extends ActionInterceptor>[] in = new Class[]{
 				EchoInterceptor.class,
 				DefaultWebAppInterceptors.class
 		};
-		Class<? extends ActionInterceptor>[] out = im.expand(in);
+		Class<? extends ActionInterceptor>[] out = interceptorsManage.replaceSpecialActionWrapper(in);
 		assertEquals(2, out.length);
 		assertEquals(EchoInterceptor.class, out[0]);
 		assertEquals(ServletConfigInterceptor.class, out[1]);
@@ -55,7 +55,7 @@ public class InterceptorsManagerTest extends MadvocTestCase {
 
 	@SuppressWarnings({"unchecked"})
 	@Test
-	public void testExpand2() {
+	public void testReplace2() {
 		InterceptorsManager im = new InterceptorsManager();
 		im.madvocConfig = new MadvocConfig();
 		im.madvocConfig.defaultInterceptors = new Class[]{EchoInterceptor.class, LogEchoInterceptor.class, ServletConfigInterceptor.class};
@@ -66,7 +66,7 @@ public class InterceptorsManagerTest extends MadvocTestCase {
 				EchoInterceptor.class
 		};
 
-		Class<? extends ActionInterceptor>[] out = im.expand(in);
+		Class<? extends ActionInterceptor>[] out = im.replaceSpecialActionWrapper(in);
 		assertEquals(5, out.length);
 		assertEquals(AnnotatedPropertyInterceptor.class, out[0]);
 		assertEquals(EchoInterceptor.class, out[1]);
@@ -77,21 +77,21 @@ public class InterceptorsManagerTest extends MadvocTestCase {
 
 	@SuppressWarnings({"unchecked"})
 	@Test
-	public void testExpandStack() {
+	public void testReplaceStack() {
 		InjectorsManager injectorsManager = new InjectorsManager();
 		injectorsManager.scopeDataResolver = new ScopeDataResolver();
 		injectorsManager.madvocConfig = new MadvocConfig();
 		injectorsManager.madpc = new PetiteContainer();
 		injectorsManager.createInjectors();
 
-		InterceptorsManager im = new InterceptorsManager();
-		im.contextInjectorComponent = new ContextInjectorComponent();
-		im.contextInjectorComponent.injectorsManager = injectorsManager;
-		im.contextInjectorComponent.madvocController = new MadvocController();
-		im.contextInjectorComponent.scopeDataResolver = injectorsManager.scopeDataResolver;
-		im.contextInjectorComponent.madpc = injectorsManager.madpc;
-		im.madvocConfig = injectorsManager.madvocConfig;
-		im.madvocConfig.defaultInterceptors = new Class[]{EchoInterceptor.class, ServletConfigInterceptor.class};
+		InterceptorsManager interceptorsManager = new InterceptorsManager();
+		interceptorsManager.contextInjectorComponent = new ContextInjectorComponent();
+		interceptorsManager.contextInjectorComponent.injectorsManager = injectorsManager;
+		interceptorsManager.contextInjectorComponent.madvocController = new MadvocController();
+		interceptorsManager.contextInjectorComponent.scopeDataResolver = injectorsManager.scopeDataResolver;
+		interceptorsManager.contextInjectorComponent.madpc = injectorsManager.madpc;
+		interceptorsManager.madvocConfig = injectorsManager.madvocConfig;
+		interceptorsManager.madvocConfig.defaultInterceptors = new Class[]{EchoInterceptor.class, ServletConfigInterceptor.class};
 
 		Class<? extends ActionInterceptor>[] in = new Class[]{
 				TestStack.class,
@@ -99,7 +99,7 @@ public class InterceptorsManagerTest extends MadvocTestCase {
 				EchoInterceptor.class
 		};
 
-		Class<? extends ActionInterceptor>[] out = im.expand(in);
+		Class<? extends ActionInterceptor>[] out = interceptorsManager.replaceSpecialActionWrapper(in);
 		assertEquals(7, out.length);
 		assertEquals(AnnotatedPropertyInterceptor.class, out[0]);
 		assertEquals(LogEchoInterceptor.class, out[1]);
@@ -146,7 +146,7 @@ public class InterceptorsManagerTest extends MadvocTestCase {
 			EchoInterceptor.class
 		};
 
-		Class<? extends ActionInterceptor>[] out = im.expand(in);
+		Class<? extends ActionInterceptor>[] out = im.replaceSpecialActionWrapper(in);
 		assertEquals(6, out.length);		// 3 + 2 + 1
 
 		// assert: TestConfigurableStack => defined in madpc
@@ -177,7 +177,7 @@ public class InterceptorsManagerTest extends MadvocTestCase {
 				DefaultWebAppInterceptors.class
 		};
 		try {
-			Class<? extends ActionInterceptor>[] out = im.expand(in);
+			Class<? extends ActionInterceptor>[] out = im.replaceSpecialActionWrapper(in);
 			fail();
 		} catch (MadvocException ignore) {
 		} catch (Exception ignored) {
@@ -208,7 +208,7 @@ public class InterceptorsManagerTest extends MadvocTestCase {
 				DefaultWebAppInterceptors.class,
 		};
 
-		Class<? extends ActionInterceptor>[] out = im.expand(in);
+		Class<? extends ActionInterceptor>[] out = im.replaceSpecialActionWrapper(in);
 		assertEquals(4, out.length);
 		assertEquals(EchoInterceptor.class, out[0]);
 		assertEquals(ServletConfigInterceptor.class, out[1]);

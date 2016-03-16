@@ -95,7 +95,7 @@ public class SocketHttpConnectionProvider implements HttpConnectionProvider {
 	 * Creates a socket using {@link #getSocketFactory(jodd.http.ProxyInfo) socket factory}.
 	 */
 	protected Socket createSocket(String host, int port) throws IOException {
-		SocketFactory socketFactory = getSocketFactory(proxy);
+		SocketFactory socketFactory = getSocketFactory(proxy);//根据proxy类型获得socketfactory,避免过多create方法
 
 		return socketFactory.createSocket(host, port);
 	}

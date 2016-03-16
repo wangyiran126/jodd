@@ -98,7 +98,7 @@ public class SymmetricEncryptor {
 	 */
 	public String decrypt(String str) {
 		try {
-			str = StringUtil.replaceChar(str, ' ', '+');	// replace spaces with chars.
+			str = StringUtil.replaceChar(str, ' ', '+');	// replaceSpecialActionWrapper spaces with chars.
 			byte[] dec = Base64.decode(str);    	// decode base64 to get bytes
 			byte[] utf8 = dcipher.doFinal(dec);     // decrypt
 			return new String(utf8, UTF_8);			// decode using utf-8

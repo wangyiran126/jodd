@@ -52,8 +52,8 @@ public class HttpRequest extends HttpBase<HttpRequest> {
 	protected String host = "localhost";
 	protected int port = DEFAULT_PORT;
 	protected String method = "GET";
-	protected String path = StringPool.SLASH;
-	protected HttpMultiMap<String> query;
+	protected String path = StringPool.SLASH;//访问路径
+	protected HttpMultiMap<String> query;//查询参数
 
 	// ---------------------------------------------------------------- init
 
@@ -152,8 +152,18 @@ public class HttpRequest extends HttpBase<HttpRequest> {
 			protocol = destination.substring(0, ndx);
 			destination = destination.substring(ndx + 3);
 		}
+		destination = parseHostAndPort(destination);
 
-		// host
+
+		// path + query
+
+		path(destination);
+
+		return this;
+	}
+
+	private String parseHostAndPort(String destination) {
+		int ndx;// host
 
 		ndx = destination.indexOf('/');
 
@@ -177,12 +187,7 @@ public class HttpRequest extends HttpBase<HttpRequest> {
 				host = host.substring(0, ndx);
 			}
 		}
-
-		// path + query
-
-		path(destination);
-
-		return this;
+		return destination;
 	}
 
 	// ---------------------------------------------------------------- static factories
@@ -209,7 +214,7 @@ public class HttpRequest extends HttpBase<HttpRequest> {
 	 * Builds a GET request.
 	 */
 	public static HttpRequest get(String destination) {
-		return new HttpRequest()
+		return new HttpRequest()//使用Builder pattern设计模式 避免构造器参数过多
 				.method("GET")
 				.set(destination);
 	}
@@ -315,7 +320,7 @@ public class HttpRequest extends HttpBase<HttpRequest> {
 
 			path = path.substring(0, ndx);
 
-			query = HttpUtil.parseQuery(queryString, true);
+			query = HttpUtil.parseQueryParameter(queryString, true);
 		} else {
 			query = HttpMultiMap.newCaseInsensitveMap();
 		}
@@ -446,7 +451,7 @@ public class HttpRequest extends HttpBase<HttpRequest> {
 	 * are discarded.
 	 */
 	public HttpRequest queryString(String queryString, boolean decode) {
-		this.query = HttpUtil.parseQuery(queryString, decode);
+		this.query = HttpUtil.parseQueryParameter(queryString, decode);
 		return this;
 	}
 
@@ -620,7 +625,7 @@ public class HttpRequest extends HttpBase<HttpRequest> {
 	 * Opens a new {@link jodd.http.HttpConnection connection}
 	 * using given {@link jodd.http.HttpConnectionProvider}.
 	 */
-	public HttpRequest open(HttpConnectionProvider httpConnectionProvider) {
+	public HttpRequest open(HttpConnectionProvider httpConnectionProvider) {//以接口参数的方式传染factory接口,解耦和
 		if (this.httpConnection != null) {
 			throw new HttpException("Connection already opened");
 		}

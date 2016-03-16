@@ -219,7 +219,7 @@ public class ActionRequest {
 
 		executionArray[index++] = new BaseActionWrapper() {
 			public Object invoke(ActionRequest actionRequest) throws Exception {
-				Object actionResult = actionRequest.invoke();
+				Object actionResult = actionRequest.invoke();//调用拦截器executionArray[1].invoke(this);
 
 				ActionRequest.this.madvocController.render(ActionRequest.this, actionResult);
 
@@ -228,14 +228,14 @@ public class ActionRequest {
 		};
 
 		// interceptors
-
+		//调用拦截器方法
 		if (totalInterceptors > 0) {
 			System.arraycopy(actionConfig.interceptors, 0, executionArray, index, totalInterceptors);
 			index += totalInterceptors;
 		}
 
 		// action
-
+		//调用action方法
 		executionArray[index] = new BaseActionWrapper() {
 			public Object invoke(ActionRequest actionRequest) throws Exception {
 				actionResult = invokeActionMethod();

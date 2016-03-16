@@ -87,7 +87,7 @@ public class ResultsManager {
 	 * Registers new action result instance. If action result of the same class is already
 	 * registered, registration will be skipped. If result for the same result type or
 	 * same target class exist, it will be replaced! However, default Jodd results will
-	 * <i>never</i> replace other results. After the registration, results are initialized.
+	 * <i>never</i> replaceSpecialActionWrapper other results. After the registration, results are initialized.
 	 */
 	protected ActionResult register(ActionResult result) {
 		Class<? extends ActionResult> actionResultClass = result.getClass();
@@ -172,8 +172,8 @@ public class ResultsManager {
 	}
 
 	/**
-	 * Returns <code>true</code> if action result can replace existing one.
-	 * This rule makes sure that Jodd's default results never replace custom
+	 * Returns <code>true</code> if action result can replaceSpecialActionWrapper existing one.
+	 * This rule makes sure that Jodd's default results never replaceSpecialActionWrapper custom
 	 * results. This rule is important since result are found on classpath
 	 * and can be registered without any order.
 	 */

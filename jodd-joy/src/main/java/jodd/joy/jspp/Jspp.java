@@ -37,7 +37,7 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * JSP pre-processor. Process input content and replace all macro calls
+ * JSP pre-processor. Process input content and replaceSpecialActionWrapper all macro calls
  * with content of macro files.
  */
 public class Jspp {
@@ -108,7 +108,7 @@ public class Jspp {
 	// ---------------------------------------------------------------- process
 
 	/**
-	 * Processes input JSP content and replace macros.
+	 * Processes input JSP content and replaceSpecialActionWrapper macros.
 	 */
 	public String process(final String input) {
 		LagartoParser lagartoParser = new LagartoParser(input, true);

@@ -52,12 +52,12 @@ public class ResultsManagerTest {
 
 		resultsManager.register(new ServletRedirectResult());	// new
 		resultsManager.register(new ServletRedirectResult());	// ignore
-		resultsManager.register(new MyRedirect1());				// replace
+		resultsManager.register(new MyRedirect1());				// replaceSpecialActionWrapper
 
 		assertNull(resultsManager.allResults.get(ServletRedirectResult.class));
 		assertEquals(MyRedirect1.class, resultsManager.stringResults.get("redirect").getClass());
 
-		resultsManager.register(new MyRedirect2());				// replace
+		resultsManager.register(new MyRedirect2());				// replaceSpecialActionWrapper
 		assertEquals(MyRedirect2.class, resultsManager.stringResults.get("redirect").getClass());
 
 		assertEquals(1, resultsManager.allResults.size());

@@ -61,7 +61,7 @@ public class WebApplication {
 
 	public static final String MADVOC_CONTAINER_NAME = "madpc";
 
-	protected PetiteContainer madpc;
+	protected PetiteContainer madpc;//容器
 
 	/**
 	 * Creates web application. Application is not initialized.
@@ -89,7 +89,7 @@ public class WebApplication {
 		log.debug("Initializing Madvoc web application");
 
 		madpc = new PetiteContainer();
-		madpc.addSelf(MADVOC_CONTAINER_NAME);
+		madpc.addSelf(MADVOC_CONTAINER_NAME);//regist容器自己
 	}
 
 	// ---------------------------------------------------------------- components

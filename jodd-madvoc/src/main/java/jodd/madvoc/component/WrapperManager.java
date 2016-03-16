@@ -78,7 +78,7 @@ public abstract class WrapperManager<T extends ActionWrapper> {
 
 	/**
 	 * Resolves single wrapper. Creates new wrapper instance if not already registered.
-	 * Does not expand the wrappers.
+	 * Does not replaceSpecialActionWrapper the wrappers.
 	 */
 	public T resolve(Class<? extends T> wrapperClass) {
 		String wrapperClassName = wrapperClass.getName();
@@ -97,13 +97,13 @@ public abstract class WrapperManager<T extends ActionWrapper> {
 
 	/**
 	 * Resolves wrappers. Unregistered wrappers will be registered. Returned array may be
-	 * different size than size of provided array, due to {@link #expand(Class[]) expanding}.
+	 * different size than size of provided array, due to {@link #replaceSpecialActionWrapper(Class[]) expanding}.
 	 */
 	public T[] resolveAll(Class<? extends T>[] wrapperClasses) {
 		if (wrapperClasses == null) {
 			return null;
 		}
-		wrapperClasses = expand(wrapperClasses);
+		wrapperClasses = replaceSpecialActionWrapper(wrapperClasses);
 		T[] result = createArray(wrapperClasses.length);
 
 		for (int i = 0; i < wrapperClasses.length; i++) {
@@ -133,7 +133,7 @@ public abstract class WrapperManager<T extends ActionWrapper> {
 	/**
 	 * Returns default wrappers from the configuration.
 	 */
-	protected abstract Class<? extends T>[] getDefaultWrappers();
+	protected abstract Class<? extends T>[] getMadvocConfigDefaultInterceptors();
 
 	/**
 	 * Returns marker wrapper class, shortcut for default web app wrappers.
@@ -143,50 +143,53 @@ public abstract class WrapperManager<T extends ActionWrapper> {
 	/**
 	 * Replaces all {@link #getDefaultWebAppWrapper()} with {@link #getDefaultWebAppWrapper()}
 	 * and {@link BaseActionWrapperStack} with stack values.
+	 * 替换与getDefaultWebAppWrapper()相同的拦截器,换成defaultInterceptors里面的拦截器
 	 */
-	protected Class<? extends T>[] expand(Class<? extends T>[] actionWrappers) {
-		if (actionWrappers == null) {
+	protected Class<? extends T>[] replaceSpecialActionWrapper(Class<? extends T>[] interceptorsOrFilters) {
+		if (interceptorsOrFilters == null) {
 			return null;
 		}
-		List<Class<? extends T>> list = new ArrayList<>(actionWrappers.length);
-		list.addAll(Arrays.asList(actionWrappers));
+		List<Class<? extends T>> interceptorsList = new ArrayList<>(interceptorsOrFilters.length);
+		interceptorsList.addAll(Arrays.asList(interceptorsOrFilters));
 
-		int i = 0;
-		while (i < list.size()) {
-			Class<? extends T> wrapperClass = list.get(i);
+		int currentIndex = 0;
+		while (currentIndex < interceptorsList.size()) {
+			Class<? extends T> wrapperClass = interceptorsList.get(currentIndex);
 			if (wrapperClass == null) {
 				continue;
 			}
+			//------------------------------替换DefaultWebAppInterceptors成defaultInterceptors
 			if (wrapperClass.equals(getDefaultWebAppWrapper())) {
-				list.remove(i);
-				// add default wrappers list
-				Class<? extends T>[] defaultWrappers = getDefaultWrappers();
-				if (defaultWrappers != null) {
-					int ndx = i;
-					for (Class<? extends T> defaultWrapper : defaultWrappers) {
-						// can't add default list stack to default list
-						if (defaultWrapper.equals(getDefaultWebAppWrapper())) {
-							throw new MadvocException("Default wrapper list is self-contained (cyclic dependency)!");
+				interceptorsList.remove(currentIndex);
+				// add default wrappers interceptorsList
+				Class<? extends T>[] defaultInterceptors = getMadvocConfigDefaultInterceptors();
+				if (defaultInterceptors != null) {
+					int addIndex = currentIndex;
+					for (Class<? extends T> defaultInterceptor : defaultInterceptors) {
+						// can't add default interceptorsList stack to default interceptorsList
+						if (defaultInterceptor.equals(getDefaultWebAppWrapper())) {
+							throw new MadvocException("Default wrapper interceptorsList is self-contained (cyclic dependency)!");
 						}
-						list.add(ndx, defaultWrapper);
-						ndx++;
+						interceptorsList.add(addIndex, defaultInterceptor);
+						addIndex++;
 					}
 				}
 				continue;
 			}
+			//————————————————————————————————替换BaseActionWrapperStack成
 			if (ReflectUtil.isTypeOf(wrapperClass, BaseActionWrapperStack.class)) {
 				BaseActionWrapperStack stack = (BaseActionWrapperStack) resolve(wrapperClass);
-				list.remove(i);
+				interceptorsList.remove(currentIndex);
 				Class<? extends T>[] stackWrappers = stack.getWrappers();
 				if (stackWrappers != null) {
-					list.addAll(i, Arrays.asList(stackWrappers));
+					interceptorsList.addAll(currentIndex, Arrays.asList(stackWrappers));
 				}
-				i--;
+				currentIndex--;
 				//continue;
 			}
-			i++;
+			currentIndex++;
 		}
-		return list.toArray(new Class[list.size()]);
+		return interceptorsList.toArray(new Class[interceptorsList.size()]);
 	}
 
 	// ---------------------------------------------------------------- create

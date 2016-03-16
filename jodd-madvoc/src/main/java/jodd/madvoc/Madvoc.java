@@ -121,6 +121,7 @@ public class Madvoc {
 
 	/**
 	 * Configures Madvoc by reading filter init parameters.
+	 * 获取init-param参数
 	 */
 	public void configure(FilterConfig filterConfig) {
 		webAppClassName = filterConfig.getInitParameter(PARAM_MADVOC_WEBAPP);
@@ -202,7 +203,7 @@ public class Madvoc {
 
 		// create and initialize web application
 		webapp = createWebApplication();
-		webapp.initWebApplication();
+		webapp.initWebApplication();//实例化容器
 
 		// init logger
 		log = LoggerFactory.getLogger(Madvoc.class);
@@ -215,13 +216,13 @@ public class Madvoc {
 		}
 
 		// params
-		if (paramsFiles != null) {
+		if (paramsFiles != null) {//定义madvoc.props参数到容器中
 			Props params = loadMadvocParams(paramsFiles);
 			webapp.defineParams(params);
 		}
 
 		// configure
-		webapp.registerMadvocComponents();
+		webapp.registerMadvocComponents();//注册mvc组件于容器中
 		madvocConfig = webapp.getComponent(MadvocConfig.class);
 		if (madvocConfig == null) {
 			throw new MadvocException("Madvoc configuration not found");

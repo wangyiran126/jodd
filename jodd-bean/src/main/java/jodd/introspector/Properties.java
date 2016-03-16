@@ -58,6 +58,7 @@ public class Properties {
 
 	/**
 	 * Inspects all properties of target type.
+	 * 找到所有field和含有setter或者getter方法的,放入propertydescriptor map
 	 */
 	protected HashMap<String, PropertyDescriptor> inspectProperties() {
 		boolean scanAccessible = classDescriptor.isScanAccessible();
@@ -126,13 +127,13 @@ public class Properties {
 				String propertyName;
 
 				if (iteration == 0) {
-					propertyName = ReflectUtil.getPropertyNameOfGetter(method);
+					propertyName = ReflectUtil.getGetterPropertyName(method);
 					if (propertyName != null) {
 						add = true;
 						issetter = false;
 					}
 				} else {
-					propertyName = ReflectUtil.getBeanPropertySetterName(method);
+					propertyName = ReflectUtil.getSetterPropertyName(method);
 					if (propertyName != null) {
 						add = true;
 						issetter = true;

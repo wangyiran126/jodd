@@ -48,7 +48,7 @@ public class InterceptorsManager extends WrapperManager<ActionInterceptor> {
 	}
 
 	@Override
-	protected Class<? extends ActionInterceptor>[] getDefaultWrappers() {
+	protected Class<? extends ActionInterceptor>[] getMadvocConfigDefaultInterceptors() {
 		return madvocConfig.getDefaultInterceptors();
 	}
 
