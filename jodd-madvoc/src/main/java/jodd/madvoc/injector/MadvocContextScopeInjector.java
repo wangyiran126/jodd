@@ -44,7 +44,7 @@ public class MadvocContextScopeInjector extends BaseScopeInjector
 		super(ScopeType.CONTEXT, scopeDataResolver);
 		this.madpc = madpc;
 	}
-
+//-------------------注入@In scopetype为ScopeType.CONTEXT的bean
 	public void injectContext(Target target, ScopeData[] scopeData, PetiteContainer madpc) {
 		ScopeData.In[] injectData = lookupInData(scopeData);
 		if (injectData == null) {

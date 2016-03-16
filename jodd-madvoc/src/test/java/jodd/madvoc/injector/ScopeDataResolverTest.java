@@ -39,7 +39,7 @@ public class ScopeDataResolverTest {
 	static class Action {
 		@In String input;
 	}
-
+//-------------------测试该类的注解数据
 	@Test
 	public void testInAnnotations() {
 		ScopeDataResolver scopeDataResolver = new ScopeDataResolver();
@@ -64,6 +64,7 @@ public class ScopeDataResolverTest {
 	static class GenAction extends BaseAction<String, Integer> {
 	}
 
+//--------------------------------测试获取<,>类型
 	@Test
 	public void testGenericAction() {
 		ScopeDataResolver scopeDataResolver = new ScopeDataResolver();

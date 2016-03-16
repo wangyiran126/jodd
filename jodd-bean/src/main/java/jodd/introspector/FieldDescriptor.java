@@ -39,7 +39,7 @@ public class FieldDescriptor extends Descriptor implements Getter, Setter {
 
 	protected final Field field;
 	protected final Type type;
-	protected final Class rawType;
+	protected final Class rawType;//原始类型
 	protected final Class rawComponentType;
 	protected final Class rawKeyComponentType;
 

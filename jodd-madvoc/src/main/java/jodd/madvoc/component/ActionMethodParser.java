@@ -127,16 +127,18 @@ public class ActionMethodParser {
 	public ActionConfig parse(final Class<?> actionClass, final Method actionMethod, ActionDef actionDef) {
 
 		// interceptors
-		ActionInterceptor[] actionInterceptors = parseActionInterceptors(actionClass, actionMethod);
+		//----------------------------解析并且实例化拦截器
+		ActionInterceptor[] actionInterceptors = parseInstantiateActionInterceptors(actionClass, actionMethod);
 
 		// filters
+		//---------------------------解析过滤器
 		ActionFilter[] actionFilters = parseActionFilters(actionClass, actionMethod);
 
 		// build action definition when not provided
 		if (actionDef == null) {
 			actionDef = parseActionDef(actionClass, actionMethod);
 		}
-
+//----------------------------------获取该方法的madvocConfig里actionAnnotations注解
 		ActionAnnotationData annotationData = detectActionAnnotationData(actionMethod);
 
 		detectAndRegisterAlias(annotationData, actionDef);
@@ -192,9 +194,11 @@ public class ActionMethodParser {
 
 		return actionResult;
 	}
-
-	protected ActionInterceptor[] parseActionInterceptors(final Class<?> actionClass, final Method actionMethod) {
+//---------------------获取action类的Interceptors,并实例化该拦截器
+	protected ActionInterceptor[] parseInstantiateActionInterceptors(final Class<?> actionClass, final Method actionMethod) {
+		//--------------------------查找该方法的InterceptedBy拦截器注释
 		Class<? extends ActionInterceptor>[] interceptorClasses = readActionInterceptors(actionMethod);
+		//--------------------------查找该类的InterceptedBy拦截器注释
 		if (interceptorClasses == null) {
 			interceptorClasses = readActionInterceptors(actionClass);
 		}
@@ -206,7 +210,9 @@ public class ActionMethodParser {
 	}
 
 	protected ActionFilter[] parseActionFilters(Class<?> actionClass, Method actionMethod) {
+		//---------------------获取方法过滤器
 		Class<? extends ActionFilter>[] filterClasses = readActionFilters(actionMethod);
+		//---------------------获取该类过滤器
 		if (filterClasses == null) {
 			filterClasses = readActionFilters(actionClass);
 		}

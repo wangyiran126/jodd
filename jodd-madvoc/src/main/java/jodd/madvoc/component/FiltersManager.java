@@ -34,7 +34,7 @@ import java.util.Set;
  * Manager for Madvoc filters.
  * @see jodd.madvoc.component.InterceptorsManager
  */
-public class FiltersManager extends WrapperManager<ActionFilter> {
+public class FiltersManager extends InstantiateManager<ActionFilter> {
 
 	@Override
 	protected ActionFilter[] createArray(int len) {

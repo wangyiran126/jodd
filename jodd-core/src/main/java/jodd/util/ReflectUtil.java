@@ -1041,6 +1041,7 @@ public class ReflectUtil {
 			// this is sort of stupid, but there seems no other way (consider don't creating new instances each time)...
 			return Array.newInstance(rawType, 0).getClass();
 		}
+//--------------------------------解决<,>的参数类型
 		if (type instanceof TypeVariable) {
 			TypeVariable<?> varType = (TypeVariable<?>) type;
 			if (implClass != null) {
@@ -1078,7 +1079,7 @@ public class ReflectUtil {
 
 			if (i < interfaces.length) {
 				rawInterface = interfaces[i];
-			} else {
+			} else {//找父类接口
 				rawInterface = rawType.getSuperclass();
 				if (rawInterface == null) {
 					continue;

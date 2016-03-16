@@ -43,7 +43,7 @@ import java.util.Set;
 /**
  * Base wrapper manager implements common logic of a wrapper.
  */
-public abstract class WrapperManager<T extends ActionWrapper> {
+public abstract class InstantiateManager<T extends ActionWrapper> {
 
 	@PetiteInject
 	protected ContextInjectorComponent contextInjectorComponent;
@@ -51,20 +51,20 @@ public abstract class WrapperManager<T extends ActionWrapper> {
 	@PetiteInject
 	protected MadvocConfig madvocConfig;
 
-	protected WrapperManager() {
-		wrappers = new HashMap<>();
+	protected InstantiateManager() {
+		instantiateCache = new HashMap<>();
 	}
 
 	// ---------------------------------------------------------------- container
 
-	protected Map<String, T> wrappers;
+	protected Map<String, T> instantiateCache;
 
 	/**
 	 * Returns all action wrappers.
 	 */
 	protected Set<T> getAll() {
-		Set<T> set = new HashSet<>(wrappers.size());
-		set.addAll(wrappers.values());
+		Set<T> set = new HashSet<>(instantiateCache.size());
+		set.addAll(instantiateCache.values());
 		return set;
 	}
 
@@ -73,24 +73,24 @@ public abstract class WrapperManager<T extends ActionWrapper> {
 	 * Looks up for existing wrapper. Returns <code>null</code> if wrapper is not already registered.
 	 */
 	public T lookup(String name) {
-		return wrappers.get(name);
+		return instantiateCache.get(name);
 	}
 
 	/**
 	 * Resolves single wrapper. Creates new wrapper instance if not already registered.
 	 * Does not replaceSpecialActionWrapper the wrappers.
 	 */
-	public T resolve(Class<? extends T> wrapperClass) {
+	public T instantiateAndInjectScopeBean(Class<? extends T> wrapperClass) {
 		String wrapperClassName = wrapperClass.getName();
 
 		T wrapper = lookup(wrapperClassName);
 
 		if (wrapper == null) {
-			wrapper = createWrapper(wrapperClass);
+			wrapper = createInstance(wrapperClass);
 
-			initializeWrapper(wrapper);
+			injectAllScopeBean(wrapper);
 
-			wrappers.put(wrapperClassName, wrapper);
+			instantiateCache.put(wrapperClassName, wrapper);
 		}
 		return wrapper;
 	}
@@ -107,7 +107,7 @@ public abstract class WrapperManager<T extends ActionWrapper> {
 		T[] result = createArray(wrapperClasses.length);
 
 		for (int i = 0; i < wrapperClasses.length; i++) {
-			result[i] = resolve(wrapperClasses[i]);
+			result[i] = instantiateAndInjectScopeBean(wrapperClasses[i]);
 		}
 		return result;
 	}
@@ -121,8 +121,9 @@ public abstract class WrapperManager<T extends ActionWrapper> {
 
 	/**
 	 * Initializes action wrapper.
+	 * 注入该类的每个scope下的bean
 	 */
-	protected void initializeWrapper(T wrapper) {
+	protected void injectAllScopeBean(T wrapper) {
 		contextInjectorComponent.injectContext(new Target(wrapper));
 
 		wrapper.init();
@@ -178,7 +179,7 @@ public abstract class WrapperManager<T extends ActionWrapper> {
 			}
 			//————————————————————————————————替换BaseActionWrapperStack成
 			if (ReflectUtil.isTypeOf(wrapperClass, BaseActionWrapperStack.class)) {
-				BaseActionWrapperStack stack = (BaseActionWrapperStack) resolve(wrapperClass);
+				BaseActionWrapperStack stack = (BaseActionWrapperStack) instantiateAndInjectScopeBean(wrapperClass);
 				interceptorsList.remove(currentIndex);
 				Class<? extends T>[] stackWrappers = stack.getWrappers();
 				if (stackWrappers != null) {
@@ -197,7 +198,7 @@ public abstract class WrapperManager<T extends ActionWrapper> {
 	/**
 	 * Creates new wrapper.
 	 */
-	protected <R extends T> R createWrapper(Class<R> wrapperClass) {
+	protected <R extends T> R createInstance(Class<R> wrapperClass) {
 		try {
 		    return wrapperClass.newInstance();
 		} catch (Exception ex) {

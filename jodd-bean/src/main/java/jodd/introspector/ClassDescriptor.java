@@ -277,7 +277,7 @@ public class ClassDescriptor {
 	 * Returns properties collection.
 	 * Creates new collection on first access.
 	 */
-	protected Properties getProperties() {//懒加载,想要的时候在用
+	protected Properties getFieldAndSpecialMethodProperties() {//懒加载,想要的时候在用
 		if (properties == null) {
 			properties = new Properties(this);
 		}
@@ -289,7 +289,7 @@ public class ClassDescriptor {
 	 * methods.
 	 */
 	public PropertyDescriptor getPropertyDescriptor(String name, boolean declared) {
-		PropertyDescriptor propertyDescriptor = getProperties().getPropertyDescriptor(name);
+		PropertyDescriptor propertyDescriptor = getFieldAndSpecialMethodProperties().getPropertyDescriptor(name);
 
 		if ((propertyDescriptor != null) && propertyDescriptor.matchDeclared(declared)) {
 			return propertyDescriptor;
@@ -302,7 +302,7 @@ public class ClassDescriptor {
 	 * Returns all properties descriptors.
 	 */
 	public PropertyDescriptor[] getAllPropertyDescriptors() {
-		return getProperties().getAllPropertyDescriptors();
+		return getFieldAndSpecialMethodProperties().getAllPropertyDescriptors();
 	}
 
 	// ---------------------------------------------------------------- ctors

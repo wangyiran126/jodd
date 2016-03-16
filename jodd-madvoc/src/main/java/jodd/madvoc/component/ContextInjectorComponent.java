@@ -58,7 +58,7 @@ public class ContextInjectorComponent {
 		ScopeData[] scopeData = scopeDataResolver.resolveScopeData(targetType);
 
 		ServletContext servletContext = madvocController.getApplicationContext();
-
+//--------------------------注入该target拦截器的@In bean,scopetype为context
 		injectorsManager.getMadvocContextScopeInjector().injectContext(target, scopeData, madpc);
 		injectorsManager.getMadvocParamsInjector().injectContext(target, scopeData, madpc);
 

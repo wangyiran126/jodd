@@ -80,7 +80,7 @@ public abstract class ManualMadvocConfigurator implements MadvocConfigurator {
 	 */
 	@SuppressWarnings("unchecked")
 	public <T extends ActionInterceptor> T interceptor(Class<T> actionInterceptorClass) {
-		return (T) interceptorsManager.resolve(actionInterceptorClass);
+		return (T) interceptorsManager.instantiateAndInjectScopeBean(actionInterceptorClass);
 	}
 
 	/**
@@ -88,7 +88,7 @@ public abstract class ManualMadvocConfigurator implements MadvocConfigurator {
 	 */
 	@SuppressWarnings("unchecked")
 	public <T extends ActionFilter> T filter(Class<T> actionFilterClass) {
-		return (T) filtersManager.resolve(actionFilterClass);
+		return (T) filtersManager.instantiateAndInjectScopeBean(actionFilterClass);
 	}
 
 	// ---------------------------------------------------------------- actions

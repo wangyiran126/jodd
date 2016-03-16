@@ -35,7 +35,7 @@ import java.util.Set;
  * so there will be only one instance per its type.
  * @see jodd.madvoc.component.FiltersManager
  */
-public class InterceptorsManager extends WrapperManager<ActionInterceptor> {
+public class InterceptorsManager extends InstantiateManager<ActionInterceptor> {
 
 	@Override
 	protected ActionInterceptor[] createArray(int len) {
