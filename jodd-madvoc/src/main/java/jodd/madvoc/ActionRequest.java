@@ -47,7 +47,7 @@ import java.lang.reflect.Modifier;
 public class ActionRequest {
 
 	protected final MadvocController madvocController;
-	protected final ActionConfig actionConfig;
+	protected final ActionInfo actionInfo;
 	protected final String actionPath;
 	protected HttpServletRequest servletRequest;
 	protected HttpServletResponse servletResponse;
@@ -94,10 +94,10 @@ public class ActionRequest {
 	}
 
 	/**
-	 * Returns {@link ActionConfig action configuration}.
+	 * Returns {@link ActionInfo action configuration}.
 	 */
-	public ActionConfig getActionConfig() {
-		return actionConfig;
+	public ActionInfo getActionInfo() {
+		return actionInfo;
 	}
 
 	/**
@@ -178,14 +178,14 @@ public class ActionRequest {
 	public ActionRequest(
 		MadvocController madvocController,
 			String actionPath,
-			ActionConfig actionConfig,
+			ActionInfo actionInfo,
 			Object action,
 			HttpServletRequest servletRequest,
 			HttpServletResponse servletResponse) {
 
 		this.madvocController = madvocController;
 		this.actionPath = actionPath;
-		this.actionConfig = actionConfig;
+		this.actionInfo = actionInfo;
 		this.servletRequest = servletRequest;
 		this.servletResponse = servletResponse;
 		this.action = action;
@@ -201,8 +201,8 @@ public class ActionRequest {
 	 * in correct order.
 	 */
 	protected ActionWrapper[] createExecutionArray() {
-		int totalInterceptors = (this.actionConfig.interceptors != null ? this.actionConfig.interceptors.length : 0);
-		int totalFilters = (this.actionConfig.filters != null ? this.actionConfig.filters.length : 0);
+		int totalInterceptors = (this.actionInfo.interceptors != null ? this.actionInfo.interceptors.length : 0);
+		int totalFilters = (this.actionInfo.filters != null ? this.actionInfo.filters.length : 0);
 
 		ActionWrapper[] executionArray = new ActionWrapper[totalFilters + 1 + totalInterceptors + 1];
 
@@ -211,7 +211,7 @@ public class ActionRequest {
 		int index = 0;
 
 		if (totalFilters > 0) {
-			System.arraycopy(actionConfig.filters, 0, executionArray, index, totalFilters);
+			System.arraycopy(actionInfo.filters, 0, executionArray, index, totalFilters);
 			index += totalFilters;
 		}
 
@@ -230,7 +230,7 @@ public class ActionRequest {
 		// interceptors
 		//调用拦截器方法
 		if (totalInterceptors > 0) {
-			System.arraycopy(actionConfig.interceptors, 0, executionArray, index, totalInterceptors);
+			System.arraycopy(actionInfo.interceptors, 0, executionArray, index, totalInterceptors);
 			index += totalInterceptors;
 		}
 
@@ -251,7 +251,7 @@ public class ActionRequest {
 	 * and it's value is <code>null</code> it will be created.
 	 */
 	protected Result findResult() {
-		Field resultField = actionConfig.resultField;
+		Field resultField = actionInfo.resultField;
 		if (resultField != null) {
 			try {
 				Result result = (Result) resultField.get(action);
@@ -273,17 +273,17 @@ public class ActionRequest {
 	 * Joins action and parameters into one array of Targets.
 	 */
 	protected Target[] makeTargets() {
-		if (!actionConfig.hasArguments) {
+		if (!actionInfo.hasArguments) {
 			return new Target[] {new Target(action)};
 		}
 
-		ActionConfig.MethodParam[] methodParams = actionConfig.getMethodParams();
+		ActionInfo.MethodParam[] methodParams = actionInfo.getMethodParams();
 		Target[] target = new Target[methodParams.length + 1];
 
 		target[0] = new Target(action);
 
 		for (int i = 0; i < methodParams.length; i++) {
-			ActionConfig.MethodParam mp = methodParams[i];
+			ActionInfo.MethodParam mp = methodParams[i];
 
 			Class type = mp.getType();
 
@@ -352,7 +352,7 @@ public class ActionRequest {
 	protected Object invokeActionMethod() throws Exception {
 		Object[] params = extractParametersFromTargets();
 		try {
-			return actionConfig.actionClassMethod.invoke(action, params);
+			return actionInfo.actionClassMethod.invoke(action, params);
 		} catch(InvocationTargetException itex) {
 			throw ExceptionUtil.extractTargetException(itex);
 		}

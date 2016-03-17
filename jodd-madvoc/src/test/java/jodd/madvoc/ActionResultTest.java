@@ -200,7 +200,7 @@ public class ActionResultTest extends MadvocTestCase {
 		ResultMapper resultMapper = webapp.getComponent(ResultMapper.class);
 		ActionMethodParser actionMethodParser = webapp.getComponent(ActionMethodParser.class);
 
-		ActionConfig cfg = parse(actionMethodParser, "tst.BooAction#foo2");
+		ActionInfo cfg = parse(actionMethodParser, "tst.BooAction#foo2");
 		String path = cfg.getActionPath();
 
 		String resultPath = resultMapper.resolveResultPathString(path, null);

@@ -700,9 +700,9 @@ public class StringUtilTest {
 		assertEquals(0, StringUtil.count(s, "xxx"));
 		assertEquals(0, StringUtil.count(s, ""));
 		assertEquals(1, StringUtil.count(s, "qwe"));
-		assertEquals(0, StringUtil.count(s, "qwe", 1));
-		assertEquals(0, StringUtil.count(s, "qwe", 50));
-		assertEquals(1, StringUtil.count(s, "qwe", -1));
+		assertEquals(0, StringUtil.countStrInSource(s, "qwe", 1));
+		assertEquals(0, StringUtil.countStrInSource(s, "qwe", 50));
+		assertEquals(1, StringUtil.countStrInSource(s, "qwe", -1));
 		assertEquals(1, StringUtil.count(s, "qwertywer"));
 		assertEquals(2, StringUtil.count(s, "we"));
 

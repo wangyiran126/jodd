@@ -26,7 +26,7 @@
 package jodd.madvoc.result;
 
 import jodd.bean.BeanUtil;
-import jodd.madvoc.ActionConfig;
+import jodd.madvoc.ActionInfo;
 import jodd.madvoc.ActionDef;
 import jodd.madvoc.ActionRequest;
 import jodd.madvoc.WebApplication;
@@ -140,14 +140,14 @@ public class ServletDispatcherResultTest {
 		MadvocController madvocController = new MadvocController();
 
 		Object action = new Object();
-		ActionConfig actionConfig = new ActionConfig(
+		ActionInfo actionInfo = new ActionInfo(
 				Action.class,
 				ReflectUtil.findMethod(Action.class, "view"),
 				null, null,
 				new ActionDef(actionPath, "GET"),
 				null, false, null, null);
 
-		return new ActionRequest(madvocController, actionConfig.getActionPath(), actionConfig, action, servletRequest, servletResponse);
+		return new ActionRequest(madvocController, actionInfo.getActionPath(), actionInfo, action, servletRequest, servletResponse);
 	}
 
 	public class Action {

@@ -26,7 +26,7 @@
 package jodd.madvoc.component;
 
 import jodd.madvoc.MadvocException;
-import jodd.madvoc.macro.PathMacros;
+import jodd.madvoc.macro.PathMatcher;
 import jodd.petite.meta.PetiteInject;
 
 /**
@@ -38,25 +38,25 @@ public class ActionPathMacroManager {
 	protected MadvocConfig madvocConfig;
 
 	/**
-	 * Builds {@link PathMacros action path macros} from given action
+	 * Builds {@link PathMatcher action path macros} from given action
 	 * path chunks. Returns either <code>null</code>, if
 	 * no action path contains no macros, or instance of the <code>PathMacro</code>
 	 * implementations.
 	 */
-	public PathMacros buildActionPathMacros(String actionPath) {
-		PathMacros pathMacros = createPathMacro();
-
-		if (!pathMacros.init(actionPath, madvocConfig.getPathMacroSeparators())) {
+	public PathMatcher buildActionPathMatcher(String actionPath) {
+		PathMatcher pathMatcher = createPathMacro();
+//-------------------检查该actionPath是否符合matcher,若符合,创建matcher
+		if (!pathMatcher.init(actionPath, madvocConfig.getPathMacroSeparators())) {
 			return null;
 		}
 
-		return pathMacros;
+		return pathMatcher;
 	}
 
 	/**
 	 * Creates new <code>PathMacro</code> instance.
 	 */
-	protected PathMacros createPathMacro() {
+	protected PathMatcher createPathMacro() {
 		try {
 			return madvocConfig.getPathMacroClass().newInstance();
 		} catch (Exception ex) {

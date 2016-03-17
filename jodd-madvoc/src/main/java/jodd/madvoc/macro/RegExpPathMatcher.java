@@ -31,7 +31,7 @@ import java.util.regex.Pattern;
  * Regular expression path macro.
  * Matches paths using regular expressions.
  */
-public class RegExpPathMacros extends BasePathMacros {
+public class RegExpPathMatcher extends BasePathMatcher {
 
 	protected Pattern[] regexpPattern;
 
@@ -39,7 +39,7 @@ public class RegExpPathMacros extends BasePathMacros {
 	public boolean init(String actionPath, String[] separators) {
 		boolean hasMacros = super.init(actionPath, separators);
 		if (hasMacros) {
-			regexpPattern = new Pattern[macrosCount];
+			regexpPattern = new Pattern[prefixCountInPath];
 		}
 		return hasMacros;
 	}

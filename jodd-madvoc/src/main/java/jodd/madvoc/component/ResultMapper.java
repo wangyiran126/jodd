@@ -27,7 +27,7 @@ package jodd.madvoc.component;
 
 import jodd.log.Logger;
 import jodd.log.LoggerFactory;
-import jodd.madvoc.ActionConfig;
+import jodd.madvoc.ActionInfo;
 import jodd.madvoc.ResultPath;
 import jodd.petite.meta.PetiteInject;
 import jodd.madvoc.MadvocUtil;
@@ -59,7 +59,7 @@ public class ResultMapper {
 	protected String lookupAlias(String alias) {
 		String value = actionsManager.lookupPathAlias(alias);
 		if (value == null) {
-			ActionConfig cfg = actionsManager.lookup(alias);
+			ActionInfo cfg = actionsManager.lookup(alias);
 			if (cfg != null) {
 				value = cfg.actionPath;
 			}

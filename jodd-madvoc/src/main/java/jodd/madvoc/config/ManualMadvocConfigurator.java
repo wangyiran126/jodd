@@ -25,7 +25,7 @@
 
 package jodd.madvoc.config;
 
-import jodd.madvoc.ActionConfig;
+import jodd.madvoc.ActionInfo;
 import jodd.madvoc.ActionDef;
 import jodd.madvoc.component.ActionMethodParser;
 import jodd.madvoc.component.ActionsManager;
@@ -270,14 +270,14 @@ public abstract class ManualMadvocConfigurator implements MadvocConfigurator {
 				actionDef = new ActionDef(actionPath, method);
 			}
 
-			ActionConfig actionConfig =
+			ActionInfo actionInfo =
 					actionMethodParser.createActionConfig(
 							actionClass, actionClassMethod,
 							actionResult,
 							actionFilterInstances, actionInterceptorInstances,
 							actionDef, async);
 
-			actionsManager.registerAction(actionConfig);
+			actionsManager.registerAction(actionInfo);
 
 			if (alias != null) {
 				actionsManager.registerPathAlias(alias, actionPath);

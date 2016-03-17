@@ -38,7 +38,7 @@ public class AnnArgTest extends MadvocTestCase {
 		webapp.registerMadvocComponents();
 		ActionMethodParser actionMethodParser = webapp.getComponent(ActionMethodParser.class);
 
-		ActionConfig cfg = parse(actionMethodParser, "tst.SuperAction#add");
+		ActionInfo cfg = parse(actionMethodParser, "tst.SuperAction#add");
 
 		assertNotNull(cfg);
 	}

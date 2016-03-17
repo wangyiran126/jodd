@@ -34,11 +34,13 @@ import jodd.util.StringUtil;
  * <code>prefix${name:pattern}suffix</code>.
  * Pattern is optional, and if missing all values are matched.
  */
-public abstract class BasePathMacros implements PathMacros {
-
-	protected int macrosCount;
-	protected String[] names;		// macros names
+public abstract class BasePathMatcher implements PathMatcher {
+//-------------------prefix有几个
+	protected int prefixCountInPath;
+	//names为每个prefix, suffix中间的内容
+	protected String[] matchContents;		// macros names
 	protected String[] patterns;	// macros patterns, if defined, elements may be null
+	//fixed为prefix, suffix前面的内容,最后为suffix后面内容
 	protected String[] fixed;		// array of fixed strings surrounding macros
 
 	/**
@@ -48,52 +50,52 @@ public abstract class BasePathMacros implements PathMacros {
 		String prefix = separators[0];
 		String split = separators[1];
 		String suffix = separators[2];
+//-----------------计算"${"在actionPath路径中的个数
+		prefixCountInPath = StringUtil.count(actionPath, prefix);
 
-		macrosCount = StringUtil.count(actionPath, prefix);
-
-		if (macrosCount == 0) {
+		if (prefixCountInPath == 0) {
 			return false;
 		}
 
-		names = new String[macrosCount];
-		patterns = new String[macrosCount];
-		fixed = new String[macrosCount + 1];
+		matchContents = new String[prefixCountInPath];
+		patterns = new String[prefixCountInPath];
+		fixed = new String[prefixCountInPath + 1];
 
-		int offset = 0;
+		int afterSuffixIndex = 0;
 		int i = 0;
 
 		while (true) {
-
-			int[] ndx = StringUtil.indexOfRegion(actionPath, prefix, suffix, offset);
+		//ndx[0]为prefix所占索引,ndx[1]为prefix之后的字符索引,ndx[2]为suffix索引,ndx[3]为为suffix之后的字符索引
+			int[] ndx = StringUtil.indexOfRegion(actionPath, prefix, suffix, afterSuffixIndex);
 
 			if (ndx == null) {
 				break;
 			}
-
-			fixed[i] = actionPath.substring(offset, ndx[0]);
-
-			String name = actionPath.substring(ndx[1], ndx[2]);
+		//---------------fix[0]为prefix前面的字符
+			fixed[i] = actionPath.substring(afterSuffixIndex, ndx[0]);
+		//--------name为actionPath路径,prefix,suffix中间的内容
+			String content = actionPath.substring(ndx[1], ndx[2]);
 
 			// name:pattern
 			String pattern = null;
 
-			int colonNdx = name.indexOf(split);
+			int colonNdx = content.indexOf(split);
 			if (colonNdx != -1) {
-				pattern = name.substring(colonNdx + 1).trim();
+				pattern = content.substring(colonNdx + 1).trim();
 
-				name = name.substring(0, colonNdx).trim();
+				content = content.substring(0, colonNdx).trim();
 			}
 
 			this.patterns[i] = pattern;
-			this.names[i] = name;
-
+			this.matchContents[i] = content;
+			//-----------offset为suffix之后的索引
 			// iterate
-			offset = ndx[3];
+			afterSuffixIndex = ndx[3];
 			i++;
 		}
 
-		if (offset < actionPath.length()) {
-			fixed[i] = actionPath.substring(offset);
+		if (afterSuffixIndex < actionPath.length()) {
+			fixed[i] = actionPath.substring(afterSuffixIndex);
 		} else {
 			fixed[i] = StringPool.EMPTY;
 		}
@@ -104,8 +106,8 @@ public abstract class BasePathMacros implements PathMacros {
 	/**
 	 * {@inheritDoc}
 	 */
-	public String[] getNames() {
-		return names;
+	public String[] getMatchContents() {
+		return matchContents;
 	}
 
 	/**
@@ -118,22 +120,22 @@ public abstract class BasePathMacros implements PathMacros {
 	/**
 	 * {@inheritDoc}
 	 */
-	public int getMacrosCount() {
-		return macrosCount;
+	public int getPrefixCountInPath() {
+		return prefixCountInPath;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public int match(String actionPath) {
-		String[] values = process(actionPath, true);
+		String[] matchContents = process(actionPath, true);
 
-		if (values == null) {
+		if (matchContents == null) {
 			return -1;
 		}
 
 		int macroChars = 0;
-		for (String value : values) {
+		for (String value : matchContents) {
 			if (value != null) {
 				macroChars += value.length();
 			}
@@ -168,23 +170,24 @@ public abstract class BasePathMacros implements PathMacros {
 			return null;
 		}
 
-		String[] values = new String[macrosCount];
-
-		int offset = fixed[0].length();
+		String[] values = new String[prefixCountInPath];
+//---------------排除prefix之前内容的偏移量
+		int beforePrefixStrLength = fixed[0].length();
 		int i = 0;
 
-		while (i < macrosCount) {
-			int nexti = i;
+		while (i < prefixCountInPath) {
+			//-----------------当前匹配次数
+			int currentMatchCount = i;
 
 			// defines next fixed string to match
 			String nextFixed;
 			while (true) {
-				nexti++;
-				if (nexti > macrosCount) {
+				currentMatchCount++;
+				if (currentMatchCount > prefixCountInPath) {
 					nextFixed = null;	// match to the end of line
 					break;
 				}
-				nextFixed = fixed[nexti];
+				nextFixed = fixed[currentMatchCount];
 				if (nextFixed.length() != 0) {
 					break;
 				}
@@ -192,40 +195,40 @@ public abstract class BasePathMacros implements PathMacros {
 			}
 
 			// find next fixed string
-			int ndx;
+			int matchContentLength;
 
 			if (nextFixed != null) {
-				ndx = actionPath.indexOf(nextFixed, offset);
+				matchContentLength = actionPath.indexOf(nextFixed, beforePrefixStrLength);
 			} else {
-				ndx = actionPath.length();
+				matchContentLength = actionPath.length();
 			}
 
-			if (ndx == -1) {
+			if (matchContentLength == -1) {
 				return null;
 			}
 
-			String macroValue = actionPath.substring(offset, ndx);
-			values[i] = macroValue;
+			String matchContent = actionPath.substring(beforePrefixStrLength, matchContentLength);
+			values[i] = matchContent;
 
 			if (match && patterns[i] != null) {
-				if (!matchValue(i, macroValue)) {
+				if (!matchValue(i, matchContent)) {
 					return null;
 				}
 			}
 
 			if (nextFixed == null) {
-				offset = ndx;
+				beforePrefixStrLength = matchContentLength;
 				break;
 			}
 
 			// iterate
 			int nextFixedLength = nextFixed.length();
-			offset = ndx + nextFixedLength;
+			beforePrefixStrLength = matchContentLength + nextFixedLength;
 
-			i = nexti;
+			i = currentMatchCount;
 		}
 
-		if (offset != actionPath.length()) {
+		if (beforePrefixStrLength != actionPath.length()) {
 			// action path is not consumed fully during this matching
 			return null;
 		}

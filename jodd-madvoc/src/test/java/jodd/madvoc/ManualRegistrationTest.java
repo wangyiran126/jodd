@@ -65,14 +65,14 @@ public class ManualRegistrationTest {
 
 		assertEquals(2, actionsManager.getActionsCount());
 
-		ActionConfig actionConfig = actionsManager.lookup("/hello", "GET");
-		assertNotNull(actionConfig);
-		assertEquals(BooAction.class, actionConfig.getActionClass());
-		assertEquals("foo1", actionConfig.actionClassMethod.getName());
+		ActionInfo actionInfo = actionsManager.lookup("/hello", "GET");
+		assertNotNull(actionInfo);
+		assertEquals(BooAction.class, actionInfo.getActionClass());
+		assertEquals("foo1", actionInfo.actionClassMethod.getName());
 
-		actionConfig = actionsManager.lookup("/world", "GET");
-		assertNotNull(actionConfig);
-		assertEquals(BooAction.class, actionConfig.getActionClass());
-		assertEquals("foo2", actionConfig.actionClassMethod.getName());
+		actionInfo = actionsManager.lookup("/world", "GET");
+		assertNotNull(actionInfo);
+		assertEquals(BooAction.class, actionInfo.getActionClass());
+		assertEquals("foo2", actionInfo.actionClassMethod.getName());
 	}
 }

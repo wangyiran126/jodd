@@ -25,7 +25,7 @@
 
 package jodd.madvoc.component;
 
-import jodd.madvoc.ActionConfig;
+import jodd.madvoc.ActionInfo;
 import jodd.madvoc.ActionRequest;
 import jodd.madvoc.MadvocException;
 import jodd.madvoc.result.ActionResult;
@@ -127,12 +127,12 @@ public class MadvocController {
 			actionPath = actionPathRewriter.rewrite(servletRequest, actionPath, httpMethod);
 
 			// resolve action configuration
-			ActionConfig actionConfig = actionsManager.lookup(actionPath, httpMethod);
-			if (actionConfig == null) {
+			ActionInfo actionInfo = actionsManager.lookup(actionPath, httpMethod);
+			if (actionInfo == null) {
 				return actionPath;
 			}
 			if (log.isDebugEnabled()) {
-				log.debug("Invoking action path '" + actionPath + "' using " + actionConfig.actionClass.getSimpleName());
+				log.debug("Invoking action path '" + actionPath + "' using " + actionInfo.actionClass.getSimpleName());
 			}
 
 			// set character encoding
@@ -149,15 +149,15 @@ public class MadvocController {
 			}
 
 			// create action object
-			Object action = createAction(actionConfig.actionClass);
+			Object action = createAction(actionInfo.actionClass);
 
 			// create action request
 			ActionRequest previousRequest = actionRequest;
-			actionRequest = createActionRequest(actionPath, actionConfig, action, servletRequest, servletResponse);
+			actionRequest = createActionRequest(actionPath, actionInfo, action, servletRequest, servletResponse);
 			actionRequest.setPreviousActionRequest(previousRequest);
 
 			// invoke and render
-			if (actionConfig.isAsync()) {
+			if (actionInfo.isAsync()) {
 				AsyncContext asyncContext = servletRequest.startAsync();
 				executor.execute(new ActionRequestInvoker(asyncContext, actionRequest));
 			} else {
@@ -233,7 +233,7 @@ public class MadvocController {
 	// ---------------------------------------------------------------- create
 
 	/**
-	 * Creates new action object from {@link ActionConfig} using default constructor.
+	 * Creates new action object from {@link ActionInfo} using default constructor.
 	 */
 	protected Object createAction(Class actionClass) {
 		try {
@@ -246,7 +246,7 @@ public class MadvocController {
 	/**
 	 * Creates new action request.
 	 * @param actionPath		action path
-	 * @param actionConfig		action configuration
+	 * @param actionInfo		action configuration
 	 * @param action			action object
 	 * @param servletRequest	http request
 	 * @param servletResponse	http response
@@ -254,12 +254,12 @@ public class MadvocController {
 	 */
 	protected ActionRequest createActionRequest(
 			String actionPath,
-			ActionConfig actionConfig,
+			ActionInfo actionInfo,
 			Object action,
 			HttpServletRequest servletRequest,
 			HttpServletResponse servletResponse) {
 
-		return new ActionRequest(this, actionPath, actionConfig, action, servletRequest, servletResponse);
+		return new ActionRequest(this, actionPath, actionInfo, action, servletRequest, servletResponse);
 	}
 
 }

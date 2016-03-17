@@ -39,8 +39,9 @@ import java.lang.reflect.Method;
 
 /**
  * Action configuration and shared run-time data, used internally.
+ * actin解析的对象
  */
-public class ActionConfig {
+public class ActionInfo {
 
 	public static class MethodParam {
 
@@ -94,11 +95,11 @@ public class ActionConfig {
 	public final boolean hasArguments;
 
 	// run-time data
-	protected ActionConfigSet actionConfigSet;
+	protected ActionPathInfo actionPathInfo;
 	public final ActionFilter[] filters;
 	public final ActionInterceptor[] interceptors;
 
-	public ActionConfig(
+	public ActionInfo(
 			Class actionClass,
 			Method actionClassMethod,
 			ActionFilter[] filters,
@@ -195,8 +196,8 @@ public class ActionConfig {
 		return async;
 	}
 
-	public ActionConfigSet getActionConfigSet() {
-		return actionConfigSet;
+	public ActionPathInfo getActionPathInfo() {
+		return actionPathInfo;
 	}
 
 	/**
@@ -219,7 +220,7 @@ public class ActionConfig {
 	/**
 	 * Returns action string in form 'actionClass#actionMethod'.
 	 */
-	public String getActionString() {
+	public String getClassMethod() {
 		String className = actionClass.getName();
 
 		int ndx = className.indexOf("$$");
@@ -233,7 +234,7 @@ public class ActionConfig {
 
 	@Override
 	public String toString() {
-		return "action: " + actionPath + (actionMethod == null ? "" : '#' + actionMethod) + "  -->  " + getActionString();
+		return "action: " + actionPath + (actionMethod == null ? "" : '#' + actionMethod) + "  -->  " + getClassMethod();
 	}
 
 }

@@ -1413,24 +1413,24 @@ public class StringUtil {
 	 * @return			number of substring occurrences
 	 */
 	public static int count(String source, String sub) {
-		return count(source, sub, 0);
+		return countStrInSource(source, sub, 0);
 	}
-	public static int count(String source, String sub, int start) {
-		int count = 0;
-		int j = start;
-		int sublen = sub.length();
-		if (sublen == 0) {
+	public static int countStrInSource(String source, String findStr, int start) {
+		int findStrNumber = 0;
+		int nextIndex = start;
+		int findStrLength = findStr.length();
+		if (findStrLength == 0) {
 			return 0;
 		}
 		while (true) {
-			int i = source.indexOf(sub, j);
-			if (i == -1) {
+			int findIndex = source.indexOf(findStr, nextIndex);
+			if (findIndex == -1) {
 				break;
 			}
-			count++;
-			j = i + sublen;
+			findStrNumber++;
+			nextIndex = findIndex + findStrLength;
 		}
-		return count;
+		return findStrNumber;
 	}
 
 	public static int count(String source, char c) {

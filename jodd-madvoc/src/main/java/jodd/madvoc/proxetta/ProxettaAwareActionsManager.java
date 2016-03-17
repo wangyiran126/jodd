@@ -27,7 +27,7 @@ package jodd.madvoc.proxetta;
 
 import jodd.madvoc.ActionDef;
 import jodd.madvoc.component.ActionsManager;
-import jodd.madvoc.ActionConfig;
+import jodd.madvoc.ActionInfo;
 import jodd.proxetta.impl.ProxyProxetta;
 
 import java.lang.reflect.Method;
@@ -53,7 +53,7 @@ public class ProxettaAwareActionsManager extends ActionsManager {
 	 * target action class.
 	 */
 	@Override
-	protected synchronized ActionConfig registerAction(Class actionClass, Method actionMethod, ActionDef actionDef) {
+	protected synchronized ActionInfo registerAction(Class actionClass, Method actionMethod, ActionDef actionDef) {
 
 		if (proxetta != null) {
 			if (actionDef == null) {

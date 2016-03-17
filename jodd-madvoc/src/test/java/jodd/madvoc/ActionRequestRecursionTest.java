@@ -110,7 +110,7 @@ public class ActionRequestRecursionTest {
 
 	public class MyActionRequest extends ActionRequest {
 		public String data = "";
-		public MyActionRequest(MadvocController madvocController, String actionPath, ActionConfig config, Object action, HttpServletRequest servletRequest, HttpServletResponse servletResponse) {
+		public MyActionRequest(MadvocController madvocController, String actionPath, ActionInfo config, Object action, HttpServletRequest servletRequest, HttpServletResponse servletResponse) {
 			super(madvocController, actionPath, config, action, servletRequest, servletResponse);
 		}
 		@Override
@@ -175,7 +175,7 @@ public class ActionRequestRecursionTest {
 		SimpleMadvocController madvocController = new SimpleMadvocController();
 
 		Action action = new Action();
-		ActionConfig actionConfig = new ActionConfig(
+		ActionInfo actionInfo = new ActionInfo(
 				Action.class,
 				ReflectUtil.findMethod(Action.class, "view"),
 				actionFilters, actionInterceptors,
@@ -184,7 +184,7 @@ public class ActionRequestRecursionTest {
 				false, null, null);
 
 		return new MyActionRequest(
-				madvocController, "actionPath", actionConfig, action, null, null);
+				madvocController, "actionPath", actionInfo, action, null, null);
 	}
 
 	private <T> T[] arr(T... array) {

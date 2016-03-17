@@ -65,7 +65,7 @@ public class MoveResult extends BaseActionResult<String> {
 	 * Saves action in the session under some id that is added as request parameter.
 	 */
 	public void render(ActionRequest actionRequest, String resultValue) throws Exception {
-		String resultBasePath = actionRequest.getActionConfig().getResultBasePath();
+		String resultBasePath = actionRequest.getActionInfo().getResultBasePath();
 
 		String resultPath = resultMapper.resolveResultPathString(resultBasePath, resultValue);
 

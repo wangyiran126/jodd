@@ -40,7 +40,7 @@ import jodd.madvoc.meta.FilteredBy;
 import jodd.madvoc.meta.InterceptedBy;
 import jodd.madvoc.meta.MadvocAction;
 import jodd.madvoc.meta.Action;
-import jodd.madvoc.ActionConfig;
+import jodd.madvoc.ActionInfo;
 import jodd.madvoc.ActionDef;
 import jodd.madvoc.path.ActionNamingStrategy;
 import jodd.madvoc.result.ActionResult;
@@ -55,7 +55,7 @@ import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
 
 /**
- * Creates {@link ActionConfig action configurations} from action java method.
+ * Creates {@link ActionInfo action configurations} from action java method.
  * Reads all annotations and builds action path (i.e. configuration).
  * <p>
  * Invoked only during registration, so performance is not critical.
@@ -124,7 +124,7 @@ public class ActionMethodParser {
 	 * @param actionMethod action method
 	 * @param actionDef optional action def, usually <code>null</code> so to be parsed
 	 */
-	public ActionConfig parse(final Class<?> actionClass, final Method actionMethod, ActionDef actionDef) {
+	public ActionInfo parse(final Class<?> actionClass, final Method actionMethod, ActionDef actionDef) {
 
 		// interceptors
 		//----------------------------解析并且实例化拦截器
@@ -496,7 +496,7 @@ public class ActionMethodParser {
 	 * Creates new instance of action configuration.
 	 * Initialize caches.
 	 */
-	public ActionConfig createActionConfig(
+	public ActionInfo createActionConfig(
 			Class actionClass,
 			Method actionClassMethod,
 			Class<? extends ActionResult> actionResult,
@@ -509,7 +509,7 @@ public class ActionMethodParser {
 		// 1) find ins and outs
 
 		Class[] paramTypes = actionClassMethod.getParameterTypes();
-		ActionConfig.MethodParam[] params = new ActionConfig.MethodParam[paramTypes.length];
+		ActionInfo.MethodParam[] params = new ActionInfo.MethodParam[paramTypes.length];
 
 		Annotation[][] paramAnns = actionClassMethod.getParameterAnnotations();
 		String[] methodParamNames = null;
@@ -537,7 +537,7 @@ public class ActionMethodParser {
 
 				scopeData = scopeDataResolver.resolveScopeData(paramName, type, paramAnns[paramIndex]);
 
-				params[paramIndex] = new ActionConfig.MethodParam(
+				params[paramIndex] = new ActionInfo.MethodParam(
 						paramTypes[paramIndex], paramName, scopeDataResolver.detectAnnotationType(paramAnns[paramIndex]));
 			}
 
@@ -559,7 +559,7 @@ public class ActionMethodParser {
 			}
 		}
 
-		return new ActionConfig(
+		return new ActionInfo(
 				actionClass,
 				actionClassMethod,
 				filters,

@@ -27,7 +27,7 @@ package jodd.madvoc.component;
 
 import jodd.log.Logger;
 import jodd.log.LoggerFactory;
-import jodd.madvoc.ActionConfig;
+import jodd.madvoc.ActionInfo;
 import jodd.madvoc.ActionRequest;
 import jodd.madvoc.MadvocException;
 import jodd.madvoc.injector.Target;
@@ -233,9 +233,9 @@ public class ResultsManager {
 
 		if (actionResult == null) {
 			// + still not found, read @Action value
-			ActionConfig actionConfig = actionRequest.getActionConfig();
+			ActionInfo actionInfo = actionRequest.getActionInfo();
 
-			Class<? extends ActionResult> actionResultClass = actionConfig.getActionResult();
+			Class<? extends ActionResult> actionResultClass = actionInfo.getActionResult();
 			if (actionResultClass != null) {
 				actionResult = lookupAndRegisterIfMissing(actionResultClass);
 			}

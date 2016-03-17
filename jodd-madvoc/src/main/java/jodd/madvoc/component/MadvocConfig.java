@@ -29,8 +29,8 @@ import jodd.madvoc.RootPackages;
 import jodd.madvoc.filter.ActionFilter;
 import jodd.madvoc.interceptor.ActionInterceptor;
 import jodd.madvoc.interceptor.ServletConfigInterceptor;
-import jodd.madvoc.macro.PathMacros;
-import jodd.madvoc.macro.WildcardPathMacros;
+import jodd.madvoc.macro.PathMatcher;
+import jodd.madvoc.macro.WildcardPathMatcher;
 import jodd.madvoc.meta.Action;
 import jodd.madvoc.meta.ActionAnnotation;
 import jodd.madvoc.meta.RestAction;
@@ -73,7 +73,7 @@ public class MadvocConfig {
 		detectDuplicatePathsEnabled = true;
 		preventCaching = true;
 		attributeMoveId = "_m_move_id";
-		pathMacroClass = WildcardPathMacros.class;
+		pathMacroClass = WildcardPathMatcher.class;
 		pathMacroSeparators = new String[] {DOLLAR_LEFT_BRACE, COLON, RIGHT_BRACE};
 		resultPathPrefix = null;
 		asyncConfig = new AsyncConfig();
@@ -356,20 +356,20 @@ public class MadvocConfig {
 
 	// ---------------------------------------------------------------- path macro class
 
-	protected Class<? extends PathMacros> pathMacroClass;
+	protected Class<? extends PathMatcher> pathMacroClass;
 	protected String[] pathMacroSeparators;
 
 	/**
 	 * Returns current implementation for path macros.
 	 */
-	public Class<? extends PathMacros> getPathMacroClass() {
+	public Class<? extends PathMatcher> getPathMacroClass() {
 		return pathMacroClass;
 	}
 
 	/**
 	 * Sets implementation for path macros.
 	 */
-	public void setPathMacroClass(Class<? extends PathMacros> pathMacroClass) {
+	public void setPathMacroClass(Class<? extends PathMatcher> pathMacroClass) {
 		this.pathMacroClass = pathMacroClass;
 	}
 

@@ -27,11 +27,11 @@ package jodd.madvoc.component;
 
 import jodd.introspector.ClassIntrospector;
 import jodd.introspector.MethodDescriptor;
-import jodd.madvoc.ActionConfig;
-import jodd.madvoc.ActionConfigSet;
+import jodd.madvoc.ActionInfo;
+import jodd.madvoc.ActionPathInfo;
 import jodd.madvoc.ActionDef;
 import jodd.madvoc.MadvocException;
-import jodd.madvoc.macro.PathMacros;
+import jodd.madvoc.macro.PathMatcher;
 import jodd.petite.meta.PetiteInject;
 import jodd.util.ClassLoaderUtil;
 import jodd.util.StringUtil;
@@ -62,29 +62,30 @@ public class ActionsManager {
 
 	@PetiteInject
 	protected MadvocConfig madvocConfig;
-
+//-------------action方法个数
 	protected int actionsCount;
 	protected boolean asyncMode;
-	protected final HashMap<String, ActionConfigSet> map;		// map of all action paths w/o macros
-	protected final SortedArrayList<ActionConfigSet> list;		// list of all action paths with macros
-	protected final HashMap<String, ActionConfig> configs;		// another map of all action configs
+	protected final HashMap<String, ActionPathInfo> pathInfosNotWithMatcher;		// map of all action paths w/o macros
+	//deep排序,deep最小的放在第一位,从而达到优化
+	protected final SortedArrayList<ActionPathInfo> pathInfosWithMatcher;		// list of all action paths with macros
+	protected final HashMap<String, ActionInfo> actionInfos;		// another map of all action configs
 	protected Map<String, String> pathAliases;					// path aliases
 
 	public ActionsManager() {
-		this.map = new HashMap<>();
-		this.list = new SortedArrayList<>(new ActionConfigSetComparator());
+		this.pathInfosNotWithMatcher = new HashMap<>();
+		this.pathInfosWithMatcher = new SortedArrayList<>(new ActionConfigSetComparator());
 		this.pathAliases = new HashMap<>();
-		this.configs = new HashMap<>();
+		this.actionInfos = new HashMap<>();
 		this.asyncMode = false;
 	}
 
 	/**
 	 * Comparator that considers first chunks number then action path.
 	 */
-	public static class ActionConfigSetComparator implements Comparator<ActionConfigSet>, Serializable {
+	public static class ActionConfigSetComparator implements Comparator<ActionPathInfo>, Serializable {
 		private static final long serialVersionUID = 1;
 
-		public int compare(ActionConfigSet set1, ActionConfigSet set2) {
+		public int compare(ActionPathInfo set1, ActionPathInfo set2) {
 			int deep1 = set1.deep;
 			int deep2 = set2.deep;
 
@@ -100,13 +101,13 @@ public class ActionsManager {
 	 * Returned list is a join of action paths
 	 * with and without the macro.
 	 */
-	public List<ActionConfig> getAllActionConfigurations() {
-		List<ActionConfig> all = new ArrayList<>(actionsCount);
+	public List<ActionInfo> getAllActionConfigurations() {
+		List<ActionInfo> all = new ArrayList<>(actionsCount);
 
-		for (ActionConfigSet set : map.values()) {
+		for (ActionPathInfo set : pathInfosNotWithMatcher.values()) {
 			all.addAll(set.getActionConfigs());
 		}
-		for (ActionConfigSet set : list) {
+		for (ActionPathInfo set : pathInfosWithMatcher) {
 			all.addAll(set.getActionConfigs());
 		}
 		return all;
@@ -143,14 +144,14 @@ public class ActionsManager {
 	/**
 	 * Registers action with provided action signature.
 	 */
-	public ActionConfig register(String actionSignature) {
+	public ActionInfo register(String actionSignature) {
 		return register(actionSignature, null);
 	}
 
 	/**
 	 * Registers action with provided action signature.
 	 */
-	public ActionConfig register(String actionSignature, ActionDef actionDef) {
+	public ActionInfo register(String actionSignature, ActionDef actionDef) {
 		int ndx = actionSignature.indexOf('#');
 		if (ndx == -1) {
 			throw new MadvocException("Madvoc action signature syntax error: " + actionSignature);
@@ -166,23 +167,23 @@ public class ActionsManager {
 		return register(actionClass, actionMethodName, actionDef);
 	}
 
-	public ActionConfig register(Class actionClass, Method actionMethod) {
+	public ActionInfo register(Class actionClass, Method actionMethod) {
 		return registerAction(actionClass, actionMethod, null);
 	}
 
-	public ActionConfig register(Class actionClass, Method actionMethod, ActionDef actionDef) {
+	public ActionInfo register(Class actionClass, Method actionMethod, ActionDef actionDef) {
 		return registerAction(actionClass, actionMethod, actionDef);
 	}
 
 	/**
 	 * Registers action with provided action class and method name.
 	 */
-	public ActionConfig register(Class actionClass, String actionMethodName) {
+	public ActionInfo register(Class actionClass, String actionMethodName) {
 		Method actionMethod = resolveActionMethod(actionClass, actionMethodName);
 		return registerAction(actionClass, actionMethod, null);
 	}
 
-	public ActionConfig register(Class actionClass, String actionMethodName, ActionDef actionDef) {
+	public ActionInfo register(Class actionClass, String actionMethodName, ActionDef actionDef) {
 		Method actionMethod = resolveActionMethod(actionClass, actionMethodName);
 		return registerAction(actionClass, actionMethod, actionDef);
 	}
@@ -193,89 +194,90 @@ public class ActionsManager {
 	 * Registration main point. Does two things:
 	 * <ul>
 	 *     <li>{@link jodd.madvoc.component.ActionMethodParser#parse(Class, java.lang.reflect.Method, jodd.madvoc.ActionDef) parse action}
-	 *     and creates {@link jodd.madvoc.ActionConfig}</li>
-	 *     <li>{@link #registerAction(jodd.madvoc.ActionConfig) registers} created {@link jodd.madvoc.ActionConfig}</li>
+	 *     and creates {@link ActionInfo}</li>
+	 *     <li>{@link #registerAction(ActionInfo) registers} created {@link ActionInfo}</li>
 	 * </ul>
-	 * Returns created {@link ActionConfig}.
-	 * @see #registerAction(jodd.madvoc.ActionConfig)
+	 * Returns created {@link ActionInfo}.
+	 * @see #registerAction(ActionInfo)
 	 */
-	protected ActionConfig registerAction(Class actionClass, Method actionMethod, ActionDef actionDef) {
-		ActionConfig actionConfig = actionMethodParser.parse(actionClass, actionMethod, actionDef);
-		if (actionConfig == null) {
+	protected ActionInfo registerAction(Class actionClass, Method actionMethod, ActionDef actionDef) {
+		//-------------------------解析actionClass类,创建actionConfig
+		ActionInfo actionInfo = actionMethodParser.parse(actionClass, actionMethod, actionDef);
+		if (actionInfo == null) {
 			return null;
 		}
-		return registerAction(actionConfig);
+		return registerAction(actionInfo);
 	}
 
 	/**
-	 * Registers manually created {@link ActionConfig action configurations}.
+	 * Registers manually created {@link ActionInfo action configurations}.
 	 * Optionally, if action path with the same name already exist,
 	 * exception will be thrown.
 	 */
-	public ActionConfig registerAction(ActionConfig actionConfig) {
-		String actionPath = actionConfig.actionPath;
+	public ActionInfo registerAction(ActionInfo actionInfo) {
+		String actionPath = actionInfo.actionPath;
 
 		if (log.isDebugEnabled()) {
-			log.debug("Registering Madvoc action: " + actionConfig.actionPath + " to: " +
-					actionConfig.getActionString());
+			log.debug("Registering Madvoc action: " + actionInfo.actionPath + " to: " +
+					actionInfo.getClassMethod());
 		}
 
-		ActionConfigSet set = createActionConfigSet(actionConfig.actionPath);
+		ActionPathInfo actionPathInfo = createActionPathInfo(actionInfo.actionPath);
 
-		if (set.actionPathMacros != null) {
+		if (actionPathInfo.pathMatcher != null) {
 			// new action patch contain macros
 			int ndx = -1;
-			for (int i = 0; i < list.size(); i++) {
-				if (list.get(i).actionPath.equals(actionPath)) {
+			for (int i = 0; i < pathInfosWithMatcher.size(); i++) {
+				if (pathInfosWithMatcher.get(i).actionPath.equals(actionPath)) {
 					ndx = i;
 					break;
 				}
 			}
 			if (ndx < 0) {
-				list.add(set);
+				pathInfosWithMatcher.add(actionPathInfo);
 			} else {
-				set = list.get(ndx);
+				actionPathInfo = pathInfosWithMatcher.get(ndx);
 			}
 		} else {
 			// action path is without macros
-			if (!map.containsKey(actionConfig.actionPath)) {
-				map.put(actionConfig.actionPath, set);
+			if (!pathInfosNotWithMatcher.containsKey(actionInfo.actionPath)) {
+				pathInfosNotWithMatcher.put(actionInfo.actionPath, actionPathInfo);
 			} else {
-				set = map.get(actionConfig.actionPath);
+				actionPathInfo = pathInfosNotWithMatcher.get(actionInfo.actionPath);
 			}
 
 		}
-		boolean isDuplicate = set.add(actionConfig);
+		boolean isDuplicate = actionPathInfo.add(actionInfo);
 
 		if (madvocConfig.isDetectDuplicatePathsEnabled()) {
 			if (isDuplicate) {
-				throw new MadvocException("Duplicate action path for " + actionConfig);
+				throw new MadvocException("Duplicate action path for " + actionInfo);
 			}
 		}
 
 		// finally
 
-		configs.put(actionConfig.getActionString(), actionConfig);
+		this.actionInfos.put(actionInfo.getClassMethod(), actionInfo);
 
 		if (!isDuplicate) {
 			actionsCount++;
 		}
 
 		// async check
-		if (actionConfig.isAsync()) {
+		if (actionInfo.isAsync()) {
 			asyncMode = true;
 		}
 
-		return actionConfig;
+		return actionInfo;
 	}
 
 	/**
 	 * Creates new action config set from the action path.
 	 */
-	protected ActionConfigSet createActionConfigSet(String actionPath) {
-		PathMacros pathMacros = actionPathMacroManager.buildActionPathMacros(actionPath);
+	protected ActionPathInfo createActionPathInfo(String actionPath) {
+		PathMatcher pathMatcher = actionPathMacroManager.buildActionPathMatcher(actionPath);
 
-		return new ActionConfigSet(actionPath, pathMacros);
+		return new ActionPathInfo(actionPath, pathMatcher);
 	}
 
 	// ---------------------------------------------------------------- look-up
@@ -288,15 +290,15 @@ public class ActionsManager {
 	 * Returns <code>null</code> if action path is not registered.
 	 * <code>method</code> must be in uppercase.
 	 */
-	public ActionConfig lookup(String actionPath, String method) {
+	public ActionInfo lookup(String actionPath, String method) {
 
 		// 1st try: the map
-
-		ActionConfigSet actionConfigSet = map.get(actionPath);
-		if (actionConfigSet != null) {
-			ActionConfig actionConfig = actionConfigSet.lookup(method);
-			if (actionConfig != null) {
-				return actionConfig;
+//----------------------通过普通的没有通配符的路径查询actinpathinfo,
+		ActionPathInfo actionPathInfo = pathInfosNotWithMatcher.get(actionPath);
+		if (actionPathInfo != null) {
+			ActionInfo actionInfo = actionPathInfo.lookup(method);
+			if (actionInfo != null) {
+				return actionInfo;
 			}
 		}
 
@@ -304,15 +306,16 @@ public class ActionsManager {
 
 		int actionPathDeep = StringUtil.count(actionPath, '/');
 
-		int len = list.size();
+		int len = pathInfosWithMatcher.size();
 
 		int lastMatched = -1;
 		int maxMatchedChars = -1;
-
+//-------------------根据matcher查找
 		for (int i = 0; i < len; i++) {
-			actionConfigSet = list.get(i);
+			actionPathInfo = pathInfosWithMatcher.get(i);
 
-			int deep = actionConfigSet.deep;
+			int deep = actionPathInfo.deep;
+			//------------"/"个数不对先排除
 			if (deep < actionPathDeep) {
 				continue;
 			}
@@ -321,13 +324,13 @@ public class ActionsManager {
 			}
 
 			// same deep level, try the fully match
-
-			int matchedChars = actionConfigSet.actionPathMacros.match(actionPath);
+//-------------------------与deep相同的开始比较path
+			int matchedChars = actionPathInfo.pathMatcher.match(actionPath);
 
 			if (matchedChars == -1) {
 				continue;
 			}
-
+//-----------------------找到匹配最多的
 			if (matchedChars > maxMatchedChars) {
 				maxMatchedChars = matchedChars;
 				lastMatched = i;
@@ -338,7 +341,7 @@ public class ActionsManager {
 			return null;
 		}
 
-		ActionConfigSet set = list.get(lastMatched);
+		ActionPathInfo set = pathInfosWithMatcher.get(lastMatched);
 
 		return set.lookup(method);
 	}
@@ -346,10 +349,10 @@ public class ActionsManager {
 	/**
 	 * Lookups action config for given action class and method string (aka 'action string').
 	 * The action string has the following format: <code>className#methodName</code>.
-	 * @see jodd.madvoc.ActionConfig#getActionString()
+	 * @see ActionInfo#getClassMethod()
 	 */
-	public ActionConfig lookup(String actionString) {
-		return configs.get(actionString);
+	public ActionInfo lookup(String actionString) {
+		return actionInfos.get(actionString);
 	}
 
 	// ---------------------------------------------------------------- aliases

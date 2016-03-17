@@ -43,7 +43,7 @@ public class Book2ActionResult extends BaseActionResult<Book> {
 
 		request.setAttribute("book", book);
 
-		String method = actionRequest.getActionConfig().getActionMethod();
+		String method = actionRequest.getActionInfo().getActionMethod();
 
 		if (method.equalsIgnoreCase("PUT")) {
 			DispatcherUtil.forward(request, actionRequest.getHttpServletResponse(), "/book/put.jsp");

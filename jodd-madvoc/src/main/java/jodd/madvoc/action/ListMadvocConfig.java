@@ -25,7 +25,7 @@
 
 package jodd.madvoc.action;
 
-import jodd.madvoc.ActionConfig;
+import jodd.madvoc.ActionInfo;
 import jodd.madvoc.ScopeType;
 import jodd.madvoc.component.ActionsManager;
 import jodd.madvoc.component.FiltersManager;
@@ -67,7 +67,7 @@ public class ListMadvocConfig {
 	protected ResultsManager resultsManager;
 
 	@Out
-	protected List<ActionConfig> actions;
+	protected List<ActionInfo> actions;
 
 	@Out
 	protected List<ActionResult> results;
@@ -125,8 +125,8 @@ public class ListMadvocConfig {
 	 */
 	protected void collectActionConfigs() {
 		actions = actionsManager.getAllActionConfigurations();
-		Collections.sort(actions, new Comparator<ActionConfig>() {
-			public int compare(ActionConfig a1, ActionConfig a2) {
+		Collections.sort(actions, new Comparator<ActionInfo>() {
+			public int compare(ActionInfo a1, ActionInfo a2) {
 				return a1.actionPath.compareTo(a2.actionPath);
 			}
 		});
