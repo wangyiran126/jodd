@@ -255,7 +255,7 @@ public abstract class ProxettaBuilder {
 				return targetClass;
 			} else if (targetClassName != null) {
 				try {
-					return ClassLoaderUtil.loadClass(targetClassName);
+					return ClassLoaderUtil.findClassByName(targetClassName);
 				} catch (ClassNotFoundException cnfex) {
 					throw new ProxettaException(cnfex);
 				}

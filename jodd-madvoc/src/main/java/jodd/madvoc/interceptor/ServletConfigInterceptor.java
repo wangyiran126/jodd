@@ -64,12 +64,12 @@ public class ServletConfigInterceptor extends BaseActionInterceptor {
 			servletRequest = new MultipartRequestWrapper(servletRequest, madvocConfig.getFileUploadFactory(), madvocConfig.getEncoding());
 			actionRequest.setHttpServletRequest(servletRequest);
 		}
-
+//--------------------注入action参数
 		// do it
 		inject(actionRequest);
 
 		Object result = actionRequest.invoke();
-
+//----------------------将@out的数据添加到request
 		outject(actionRequest);
 
 		return result;

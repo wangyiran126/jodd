@@ -63,7 +63,7 @@ public class AutomagicMadvocConfigurator extends ClassFinder implements MadvocCo
 
 	@PetiteInject
 	protected MadvocConfig madvocConfig;
-
+//-----------------action管理类
 	@PetiteInject
 	protected ActionsManager actionsManager;
 
@@ -101,7 +101,7 @@ public class AutomagicMadvocConfigurator extends ClassFinder implements MadvocCo
 		elapsed = System.currentTimeMillis();
 
 		rulesEntries.smartMode();
-
+//----------------------浏览所有路径,并且注册Action,Result类
 		try {
 			scanPaths(classpath);
 		} catch (Exception ex) {
@@ -119,7 +119,7 @@ public class AutomagicMadvocConfigurator extends ClassFinder implements MadvocCo
 	protected void onEntry(EntryData entryData) {
 		String entryName = entryData.getName();
 		if (entryName.endsWith(actionClassSuffix)) {
-			try {
+			try {//-----------注册Action类与actionManager
 				onActionClass(entryName);
 			} catch (ClassNotFoundException cnfex) {
 				if (log.isDebugEnabled()) {
@@ -206,7 +206,7 @@ public class AutomagicMadvocConfigurator extends ClassFinder implements MadvocCo
 			}
 			// just public methods
 			Method method = methodDescriptor.getMethod();
-
+//---------------注册含有注解@Action,@RestAction
 			boolean hasAnnotation = false;
 			for (ActionAnnotation<?> actionAnnotation : madvocConfig.getActionAnnotationInstances()) {
 				if (actionAnnotation.hasAnnotation(method)) {

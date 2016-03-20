@@ -193,7 +193,7 @@ public class ActionRequest {
 		this.targets = makeTargets();
 
 		this.executionIndex = 0;
-		this.executionArray = createExecutionArray();
+		this.executionArray = createExecutionArray();//action要执行的
 	}
 
 	/**
@@ -220,7 +220,7 @@ public class ActionRequest {
 		executionArray[index++] = new BaseActionWrapper() {
 			public Object invoke(ActionRequest actionRequest) throws Exception {
 				Object actionResult = actionRequest.invoke();//调用拦截器executionArray[1].invoke(this);
-
+//----------------------------找到对应的result结果
 				ActionRequest.this.madvocController.render(ActionRequest.this, actionResult);
 
 				return actionResult;

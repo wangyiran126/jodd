@@ -125,7 +125,7 @@ public class MadvocController {
 			String httpMethod = servletRequest.getMethod().toUpperCase();
 
 			actionPath = actionPathRewriter.rewrite(servletRequest, actionPath, httpMethod);
-
+//-----------------------------找到访问路径对应的类方法信息
 			// resolve action configuration
 			ActionInfo actionInfo = actionsManager.lookup(actionPath, httpMethod);
 			if (actionInfo == null) {
@@ -147,10 +147,10 @@ public class MadvocController {
 
 				characterEncodingSet = true;
 			}
-
+//---------------------------实例化action类
 			// create action object
 			Object action = createAction(actionInfo.actionClass);
-
+//---------------------------实例化action执行类
 			// create action request
 			ActionRequest previousRequest = actionRequest;
 			actionRequest = createActionRequest(actionPath, actionInfo, action, servletRequest, servletResponse);
@@ -217,7 +217,7 @@ public class MadvocController {
 	 */
 	@SuppressWarnings("unchecked")
 	public void render(ActionRequest actionRequest, Object resultObject) throws Exception {
-		ActionResult actionResult = resultsManager.lookup(actionRequest, resultObject);
+		ActionResult actionResult = resultsManager.lookup(actionRequest, resultObject);//找到对应的result,默认为servletdispatcherresult
 
 		if (actionResult == null) {
 			throw new MadvocException("Action result not found");

@@ -216,13 +216,16 @@ public class Madvoc {
 		}
 
 		// params
+		//-------------------载入madvoc.props里面参数
 		if (paramsFiles != null) {//定义madvoc.props参数到容器中
 			Props params = loadMadvocParams(paramsFiles);
-			webapp.defineParams(params);
+			webapp.registPropParams(params);
 		}
 
 		// configure
+		//注册该组件
 		webapp.registerMadvocComponents();//注册mvc组件于容器中
+		//实例化该组件其参数
 		madvocConfig = webapp.getComponent(MadvocConfig.class);
 		if (madvocConfig == null) {
 			throw new MadvocException("Madvoc configuration not found");
@@ -256,9 +259,9 @@ public class Madvoc {
 			throw new MadvocException("Madvoc results manager not found");
 		}
 		webapp.initResults(resultsManager);
-
+//--------------------------找到madvoc.configurator并且创建
 		// configure with external configurator
-		MadvocConfigurator configurator = loadMadvocConfig();
+		MadvocConfigurator configurator = findCreateMadvocConfig();
 		webapp.configure(configurator);
 
 		// prepare web application
@@ -303,7 +306,7 @@ public class Madvoc {
 		WebApplication webApp;
 		try {
 			if (webAppClass == null) {
-				webAppClass = ClassLoaderUtil.loadClass(webAppClassName);
+				webAppClass = ClassLoaderUtil.findClassByName(webAppClassName);
 			}
 			webApp = (WebApplication) webAppClass.newInstance();
 		} catch (Exception ex) {
@@ -332,7 +335,7 @@ public class Madvoc {
 	 * Loads {@link jodd.madvoc.config.MadvocConfigurator}. If class name is <code>null</code>,
 	 * {@link jodd.madvoc.config.AutomagicMadvocConfigurator} will be created.
 	 */
-	protected MadvocConfigurator loadMadvocConfig() {
+	protected MadvocConfigurator findCreateMadvocConfig() {
 		if ((madvocConfiguratorClassName != null) && (madvocConfiguratorClass != null)) {
 			throw new MadvocException("Ambiguous MadvocConfigurator setting");
 		}
@@ -344,7 +347,7 @@ public class Madvoc {
 		MadvocConfigurator configurator;
 		try {
 			if (madvocConfiguratorClass == null) {
-				madvocConfiguratorClass = ClassLoaderUtil.loadClass(madvocConfiguratorClassName);
+				madvocConfiguratorClass = ClassLoaderUtil.findClassByName(madvocConfiguratorClassName);
 			}
 
 			configurator = (MadvocConfigurator) madvocConfiguratorClass.newInstance();

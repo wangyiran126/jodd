@@ -43,7 +43,7 @@ public abstract class MadvocTestCase {
 		String[] data = StringUtil.splitc(signature, '#');
 		try {
 			data[0] = this.getClass().getPackage().getName() + '.' + data[0];
-			Class c = ClassLoaderUtil.loadClass(data[0]);
+			Class c = ClassLoaderUtil.findClassByName(data[0]);
 			Method m = ReflectUtil.findMethod(c, data[1]);
 			return new Object[]{c, m};
 		} catch (Exception e) {

@@ -70,7 +70,7 @@ public class MapToBean {
 		}
 		else {
 			try {
-				targetType = ClassLoaderUtil.loadClass(className);
+				targetType = ClassLoaderUtil.findClassByName(className);
 			} catch (ClassNotFoundException cnfex) {
 				throw new JsonException(cnfex);
 			}

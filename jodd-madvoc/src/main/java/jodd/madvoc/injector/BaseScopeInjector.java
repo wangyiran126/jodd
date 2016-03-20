@@ -114,7 +114,7 @@ public abstract class BaseScopeInjector {
 		if (in.target == null) {
 			return attrName;
 		}
-		return in.target + attrName.substring(in.name.length());
+		return in.target + attrName.substring(in.name.length());//获取参数类.属性
 	}
 
 

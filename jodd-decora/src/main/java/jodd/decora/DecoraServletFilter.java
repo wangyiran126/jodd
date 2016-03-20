@@ -83,7 +83,7 @@ public class DecoraServletFilter implements Filter {
 
 		if (decoraManagerClass != null) {
 			try {
-				Class decoraManagerType = ClassLoaderUtil.loadClass(decoraManagerClass);
+				Class decoraManagerType = ClassLoaderUtil.findClassByName(decoraManagerClass);
 				decoraManager = (DecoraManager) decoraManagerType.newInstance();
 			} catch (Exception ex) {
 				log.error("Unable to load Decora manager class: " + decoraManagerClass, ex);
@@ -97,7 +97,7 @@ public class DecoraServletFilter implements Filter {
 
 		if (decoraParserClass != null) {
 			try {
-				Class decoraParserType = ClassLoaderUtil.loadClass(decoraParserClass);
+				Class decoraParserType = ClassLoaderUtil.findClassByName(decoraParserClass);
 				decoraParser = (DecoraParser) decoraParserType.newInstance();
 			} catch (Exception ex) {
 				log.error("Unable to load Decora parser class: " + decoraParserClass, ex);

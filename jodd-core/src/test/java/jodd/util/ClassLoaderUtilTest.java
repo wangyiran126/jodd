@@ -83,45 +83,45 @@ public class ClassLoaderUtilTest {
 	@Test
 	public void testLoadClass() throws Exception {
 		try {
-			ClassLoaderUtil.loadClass("not.existing.class");
+			ClassLoaderUtil.findClassByName("not.existing.class");
 		} catch (ClassNotFoundException cnfex) {
 			assertEquals("Class not found: not.existing.class", cnfex.getMessage());
 		}
 
 		try {
-			Class joddClass = ClassLoaderUtil.loadClass("jodd.util.ClassLoaderUtilTest");
+			Class joddClass = ClassLoaderUtil.findClassByName("jodd.util.ClassLoaderUtilTest");
 			assertNotNull(joddClass);
 		} catch (ClassNotFoundException ignore) {
 			fail();
 		}
-		assertEquals(Integer.class, ClassLoaderUtil.loadClass("java.lang.Integer"));
-		assertEquals(int.class, ClassLoaderUtil.loadClass("int"));
-		assertEquals(boolean.class, ClassLoaderUtil.loadClass("boolean"));
-		assertEquals(short.class, ClassLoaderUtil.loadClass("short"));
-		assertEquals(byte.class, ClassLoaderUtil.loadClass("byte"));
-		assertEquals(char.class, ClassLoaderUtil.loadClass("char"));
-		assertEquals(double.class, ClassLoaderUtil.loadClass("double"));
-		assertEquals(float.class, ClassLoaderUtil.loadClass("float"));
-		assertEquals(long.class, ClassLoaderUtil.loadClass("long"));
+		assertEquals(Integer.class, ClassLoaderUtil.findClassByName("java.lang.Integer"));
+		assertEquals(int.class, ClassLoaderUtil.findClassByName("int"));
+		assertEquals(boolean.class, ClassLoaderUtil.findClassByName("boolean"));
+		assertEquals(short.class, ClassLoaderUtil.findClassByName("short"));
+		assertEquals(byte.class, ClassLoaderUtil.findClassByName("byte"));
+		assertEquals(char.class, ClassLoaderUtil.findClassByName("char"));
+		assertEquals(double.class, ClassLoaderUtil.findClassByName("double"));
+		assertEquals(float.class, ClassLoaderUtil.findClassByName("float"));
+		assertEquals(long.class, ClassLoaderUtil.findClassByName("long"));
 
-		assertEquals(Integer[].class, ClassLoaderUtil.loadClass("java.lang.Integer[]"));
-		assertEquals(int[].class, ClassLoaderUtil.loadClass("int[]"));
-		assertEquals(boolean[].class, ClassLoaderUtil.loadClass("boolean[]"));
-		assertEquals(short[].class, ClassLoaderUtil.loadClass("short[]"));
-		assertEquals(byte[].class, ClassLoaderUtil.loadClass("byte[]"));
-		assertEquals(char[].class, ClassLoaderUtil.loadClass("char[]"));
-		assertEquals(double[].class, ClassLoaderUtil.loadClass("double[]"));
-		assertEquals(float[].class, ClassLoaderUtil.loadClass("float[]"));
-		assertEquals(long[].class, ClassLoaderUtil.loadClass("long[]"));
+		assertEquals(Integer[].class, ClassLoaderUtil.findClassByName("java.lang.Integer[]"));
+		assertEquals(int[].class, ClassLoaderUtil.findClassByName("int[]"));
+		assertEquals(boolean[].class, ClassLoaderUtil.findClassByName("boolean[]"));
+		assertEquals(short[].class, ClassLoaderUtil.findClassByName("short[]"));
+		assertEquals(byte[].class, ClassLoaderUtil.findClassByName("byte[]"));
+		assertEquals(char[].class, ClassLoaderUtil.findClassByName("char[]"));
+		assertEquals(double[].class, ClassLoaderUtil.findClassByName("double[]"));
+		assertEquals(float[].class, ClassLoaderUtil.findClassByName("float[]"));
+		assertEquals(long[].class, ClassLoaderUtil.findClassByName("long[]"));
 
-		assertEquals(Integer[][].class, ClassLoaderUtil.loadClass("java.lang.Integer[][]"));
-		assertEquals(int[][].class, ClassLoaderUtil.loadClass("int[][]"));
+		assertEquals(Integer[][].class, ClassLoaderUtil.findClassByName("java.lang.Integer[][]"));
+		assertEquals(int[][].class, ClassLoaderUtil.findClassByName("int[][]"));
 
 		String dummyClassName = Dummy.class.getName();
-		assertEquals(Dummy.class, ClassLoaderUtil.loadClass(dummyClassName));
+		assertEquals(Dummy.class, ClassLoaderUtil.findClassByName(dummyClassName));
 
-		assertEquals(Dummy[].class, ClassLoaderUtil.loadClass(dummyClassName + "[]"));
-		assertEquals(Dummy[][].class, ClassLoaderUtil.loadClass(dummyClassName + "[][]"));
+		assertEquals(Dummy[].class, ClassLoaderUtil.findClassByName(dummyClassName + "[]"));
+		assertEquals(Dummy[][].class, ClassLoaderUtil.findClassByName(dummyClassName + "[][]"));
 
 		// special case
 
@@ -133,13 +133,13 @@ public class ClassLoaderUtilTest {
 		URL[] urls = parentClassloader.getURLs();
 		ExtendedURLClassLoader excl = new ExtendedURLClassLoader(urls, parentClassloader, false);
 
-		Class dummyClass = ClassLoaderUtil.loadClass(dummyClassName, excl);
+		Class dummyClass = ClassLoaderUtil.findClassByName(dummyClassName, excl);
 		assertFalse(Dummy.class == dummyClass); // classes are NOT the same as they are loaded by different class loaders
 		assertEquals(Dummy.class.getName(), dummyClass.getName());
 
 		// special case with array!
 
-		Class dummyClassArray = ClassLoaderUtil.loadClass(dummyClassName + "[]", excl);
+		Class dummyClassArray = ClassLoaderUtil.findClassByName(dummyClassName + "[]", excl);
 		assertFalse(Dummy[].class == dummyClassArray);
 		assertEquals(Dummy[].class.getName(), dummyClassArray.getName());
 

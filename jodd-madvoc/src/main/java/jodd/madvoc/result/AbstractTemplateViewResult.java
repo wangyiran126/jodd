@@ -75,7 +75,7 @@ public abstract class AbstractTemplateViewResult extends BaseActionResult<String
 			if (log.isDebugEnabled()) {
 				log.debug("new target: " + actionAndResultPath);
 			}
-
+//----------------------找到对应的.jsp文件
 			target = resolveTarget(actionRequest, resultValue);
 
 			if (target == null) {

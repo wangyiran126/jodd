@@ -293,7 +293,7 @@ public class RouteMadvocConfigurator extends ManualMadvocConfigurator {
 
 				String className = names[0];
 
-				Class actionClass = ClassLoaderUtil.loadClass(className);
+				Class actionClass = ClassLoaderUtil.findClassByName(className);
 
 				action.mapTo(actionClass, names[1]);
 				continue;

@@ -465,7 +465,7 @@ public class BeanUtilBean extends BeanUtilUtil implements BeanUtil {
 
 
 	// ---------------------------------------------------------------- SET
-
+//--------------将属性name,值value注入到bean
 	@Override
 	public void setProperty(Object bean, String name, Object value) {
 		BeanProperty beanProperty = new BeanProperty(this, bean, name);

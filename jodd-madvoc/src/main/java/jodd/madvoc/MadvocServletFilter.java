@@ -56,6 +56,7 @@ public class MadvocServletFilter implements Filter {
 
 	/**
 	 * Filter initialization.
+	 * filterConfig为web-test-int.xml配置信息
 	 */
 	public void init(FilterConfig filterConfig) throws ServletException {
 		ServletContext servletContext = filterConfig.getServletContext();
@@ -82,6 +83,7 @@ public class MadvocServletFilter implements Filter {
 	 */
 	protected Madvoc createMadvoc(FilterConfig filterConfig) {
 		Madvoc madvoc = new Madvoc();
+		//-----------------设置web-test-int.xml配置参数
 		madvoc.configure(filterConfig);
 		return madvoc;
 	}

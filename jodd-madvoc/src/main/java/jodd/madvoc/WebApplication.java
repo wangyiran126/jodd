@@ -201,13 +201,13 @@ public class WebApplication {
 	 * Initialized web application parameters. Provided properties object is always non-<code>null</code>.
 	 * Simple defines parameters for internal container.
 	 */
-	protected void defineParams(Properties properties) {
+	protected void registPropParams(Properties properties) {
 		log.debug("Defining Madvoc parameters");
 
 		madpc.defineParameters(properties);
 	}
 
-	protected void defineParams(Props props) {
+	protected void registPropParams(Props props) {
 		log.debug("Defining Madvoc parameters");
 
 		madpc.defineParameters(props);
@@ -272,9 +272,9 @@ public class WebApplication {
 	 */
 	public void configure(MadvocConfigurator configurator) {
 		log.debug("Configuring Madvoc");
-
+//----------------添加该配置到容器中
 		registerComponent(configurator);
-
+//---------------注册action,result类
 		configurator.configure();
 	}
 }

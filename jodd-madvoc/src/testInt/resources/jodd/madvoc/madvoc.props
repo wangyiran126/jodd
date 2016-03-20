@@ -2,7 +2,7 @@ interceptorManager.requestScopeInjector.injectAttributes=true
 interceptorManager.requestScopeInjector.injectParameters=true
 madvocConfig.defaultExtension=html
 
-madvocConfig.pathMacroClass=jodd.madvoc.macro.RegExpPathMacros
+madvocConfig.pathMacroClass=jodd.madvoc.macro.RegExpPathMatcher
 
 jodd.madvoc.AppendingInterceptor.addon=<jodd>
 jodd.madvoc.AppendingInterceptor$Hey.addon=<heyp>

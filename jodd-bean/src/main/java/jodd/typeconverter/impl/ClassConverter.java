@@ -56,7 +56,7 @@ public class ClassConverter implements TypeConverter<Class> {
 				className = StringUtil.substring(className, 0, -6);
 			}
 
-			return ClassLoaderUtil.loadClass(className);
+			return ClassLoaderUtil.findClassByName(className);
 		} catch (ClassNotFoundException cnfex) {
 			throw new TypeConversionException(value, cnfex);
 		}

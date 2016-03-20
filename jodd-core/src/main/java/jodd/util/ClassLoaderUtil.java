@@ -581,7 +581,7 @@ public class ClassLoaderUtil {
 	 * Loads a class using default class loader strategy.
 	 * @see jodd.util.cl.DefaultClassLoaderStrategy
 	 */
-	public static Class loadClass(String className) throws ClassNotFoundException {
+	public static Class findClassByName(String className) throws ClassNotFoundException {
 		return JoddCore.classLoaderStrategy.loadClass(className, null);
 	}
 	
@@ -589,7 +589,7 @@ public class ClassLoaderUtil {
 	 * Loads a class using default class loader strategy.
 	 * @see jodd.util.cl.DefaultClassLoaderStrategy
 	 */
-	public static Class loadClass(String className, ClassLoader classLoader) throws ClassNotFoundException {
+	public static Class findClassByName(String className, ClassLoader classLoader) throws ClassNotFoundException {
 		return JoddCore.classLoaderStrategy.loadClass(className, classLoader);
 	}
 

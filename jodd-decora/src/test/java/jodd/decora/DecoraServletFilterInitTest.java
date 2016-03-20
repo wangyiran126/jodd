@@ -110,7 +110,7 @@ public class DecoraServletFilterInitTest {
 		when(filterConfigMock.getInitParameter(DecoraServletFilter.PARAM_DECORA_MANAGER)).thenReturn("TEST");
 		when(filterConfigMock.getInitParameter(DecoraServletFilter.PARAM_DECORA_PARSER)).thenReturn(null);
 		mockStatic(ClassLoaderUtil.class);
-		when(ClassLoaderUtil.loadClass("TEST")).thenReturn(DecoraManager.class);
+		when(ClassLoaderUtil.findClassByName("TEST")).thenReturn(DecoraManager.class);
 
 		// when
 		decoraServletFilter.init(filterConfigMock);
@@ -126,7 +126,7 @@ public class DecoraServletFilterInitTest {
 		when(filterConfigMock.getInitParameter(DecoraServletFilter.PARAM_DECORA_MANAGER)).thenReturn(null);
 		when(filterConfigMock.getInitParameter(DecoraServletFilter.PARAM_DECORA_PARSER)).thenReturn("TEST");
 		mockStatic(ClassLoaderUtil.class);
-		when(ClassLoaderUtil.loadClass("TEST")).thenReturn(DecoraParser.class);
+		when(ClassLoaderUtil.findClassByName("TEST")).thenReturn(DecoraParser.class);
 
 		// when
 		decoraServletFilter.init(filterConfigMock);

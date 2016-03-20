@@ -41,11 +41,7 @@ import jodd.log.LoggerFactory;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Manages all Madvoc action and aliases registrations.
@@ -160,7 +156,7 @@ public class ActionsManager {
 		String actionMethodName = actionSignature.substring(ndx + 1);
 		Class actionClass;
 		try {
-			actionClass = ClassLoaderUtil.loadClass(actionClassName);
+			actionClass = ClassLoaderUtil.findClassByName(actionClassName);
 		} catch (ClassNotFoundException cnfex) {
 			throw new MadvocException("Madvoc action class not found: " + actionClassName, cnfex);
 		}
@@ -221,7 +217,7 @@ public class ActionsManager {
 			log.debug("Registering Madvoc action: " + actionInfo.actionPath + " to: " +
 					actionInfo.getClassMethod());
 		}
-
+//-------------------------注册action path信息
 		ActionPathInfo actionPathInfo = createActionPathInfo(actionInfo.actionPath);
 
 		if (actionPathInfo.pathMatcher != null) {

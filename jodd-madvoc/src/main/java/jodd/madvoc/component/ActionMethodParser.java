@@ -127,18 +127,18 @@ public class ActionMethodParser {
 	public ActionInfo parse(final Class<?> actionClass, final Method actionMethod, ActionDef actionDef) {
 
 		// interceptors
-		//----------------------------解析并且实例化拦截器
+		//----------------------------解析每个action类方法的拦截器,如果没有则使用madvocConfig.getDefaultInterceptors();拦截器
 		ActionInterceptor[] actionInterceptors = parseInstantiateActionInterceptors(actionClass, actionMethod);
 
 		// filters
 		//---------------------------解析过滤器
 		ActionFilter[] actionFilters = parseActionFilters(actionClass, actionMethod);
-
+//------------找到该类方法对应的页面路径
 		// build action definition when not provided
 		if (actionDef == null) {
 			actionDef = parseActionDef(actionClass, actionMethod);
 		}
-//----------------------------------获取该方法的madvocConfig里actionAnnotations注解
+//----------------------------------读取该方法action注解,并创建注解数据类
 		ActionAnnotationData annotationData = detectActionAnnotationData(actionMethod);
 
 		detectAndRegisterAlias(annotationData, actionDef);
@@ -146,7 +146,7 @@ public class ActionMethodParser {
 		final boolean async = parseMethodAsyncFlag(annotationData);
 
 		final Class<? extends ActionResult> actionResult = parseActionResult(annotationData);
-
+//---------------------------------为每个方法创建
 		return createActionConfig(
 				actionClass, actionMethod,
 				actionResult,
@@ -293,7 +293,7 @@ public class ActionMethodParser {
 					while (true) {
 						String className = packageName + '.' + madvocRootPackageClassName;
 						try {
-							Class<?> madvocRootPackageClass = ClassLoaderUtil.loadClass(className, actionClass.getClassLoader());
+							Class<?> madvocRootPackageClass = ClassLoaderUtil.findClassByName(className, actionClass.getClassLoader());
 
 							// class found, find the mapping
 							String mapping = StringPool.EMPTY;

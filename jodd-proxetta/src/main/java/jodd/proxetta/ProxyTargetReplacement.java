@@ -238,7 +238,7 @@ public class ProxyTargetReplacement {
 					String annotationClass = ann.getAnnotationClassname();
 
 					try {
-						Class annotation = ClassLoaderUtil.loadClass(annotationClass);
+						Class annotation = ClassLoaderUtil.findClassByName(annotationClass);
 
 						annotationMethod = annotation.getMethod(elementName);
 
@@ -269,7 +269,7 @@ public class ProxyTargetReplacement {
 
 					try {
 						if (annotationMethod == null) {
-							Class annotation = ClassLoaderUtil.loadClass(annotationClass);
+							Class annotation = ClassLoaderUtil.findClassByName(annotationClass);
 
 							annotationMethod = annotation.getMethod(elementName);
 						}

@@ -288,7 +288,7 @@ public abstract class ClassFinder {
 				return;
 			}
 			scanJarFile(file);
-		} else if (file.isDirectory()) {
+		} else if (file.isDirectory()) {//--------浏览类路径
 			scanClassPath(file);
 		}
 	}
@@ -471,7 +471,7 @@ public abstract class ClassFinder {
 	 */
 	protected Class loadClass(String className) throws ClassNotFoundException {
 		try {
-			return ClassLoaderUtil.loadClass(className);
+			return ClassLoaderUtil.findClassByName(className);
 		} catch (ClassNotFoundException cnfex) {
 			if (ignoreException) {
 				return null;

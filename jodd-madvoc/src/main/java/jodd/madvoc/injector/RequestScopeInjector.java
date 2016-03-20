@@ -190,7 +190,7 @@ public class RequestScopeInjector extends BaseScopeInjector
 	 */
 	protected void injectParameters(Target[] targets, ScopeData[] injectData, HttpServletRequest servletRequest) {
 		boolean encode = encodeGetParams && servletRequest.getMethod().equals("GET");
-		Enumeration paramNames = servletRequest.getParameterNames();
+		Enumeration paramNames = servletRequest.getParameterNames();//获取request请求的参数
 
 		while (paramNames.hasMoreElements()) {
 			String paramName = (String) paramNames.nextElement();
@@ -202,14 +202,14 @@ public class RequestScopeInjector extends BaseScopeInjector
 				Target target = targets[i];
 				if (injectData[i] == null) {
 					continue;
-				}
+				}//--------------找到输入@in的参数数据
 				ScopeData.In[] scopes = injectData[i].in;
 				if (scopes == null) {
 					continue;
 				}
 
 				for (ScopeData.In in : scopes) {
-					String name = getMatchedPropertyName(in, paramName);
+					String name = getMatchedPropertyName(in, paramName);//找到该request参数符合@in参数的
 					if (name != null) {
 						String[] paramValues = servletRequest.getParameterValues(paramName);
 						paramValues = ServletUtil.prepareParameters(
@@ -227,7 +227,7 @@ public class RequestScopeInjector extends BaseScopeInjector
 							}
 						}
 						Object value = (paramValues.length != 1 ? paramValues : paramValues[0]);
-						setTargetProperty(target, name, value);
+						setTargetProperty(target, name, value);//注入该参数值到target(target为action,name为属性名,value为值)
 					}
 				}
 			}
@@ -317,7 +317,7 @@ public class RequestScopeInjector extends BaseScopeInjector
 
 	public void inject(ActionRequest actionRequest) {
 		Target[] targets = actionRequest.getTargets();
-
+//-----------------找出@in,@out相关信息
 		ScopeData[] injectData = lookupScopeData(actionRequest);
 		if (injectData == null) {
 			return;
@@ -326,7 +326,7 @@ public class RequestScopeInjector extends BaseScopeInjector
 
 		if (injectAttributes) {
 			injectAttributes(targets, injectData, servletRequest);
-		}
+		}//------------------注入action参数
 		if (injectParameters) {
 			injectParameters(targets, injectData, servletRequest);
 			injectUploadedFiles(targets, injectData, servletRequest);
@@ -353,7 +353,7 @@ public class RequestScopeInjector extends BaseScopeInjector
 			if (scopes == null) {
 				continue;
 			}
-
+//------------------------将@out name value注册到request
 			for (ScopeData.Out out : scopes) {
 				Object value = getTargetProperty(target, out);
 				servletRequest.setAttribute(out.name, value);
